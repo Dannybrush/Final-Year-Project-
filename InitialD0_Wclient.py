@@ -14,6 +14,23 @@ class Client:
     def connectToServer(self):
         self.client.connect((self.SERVER_IP, self.PORT))
 
+    def reciept(self):
+        while True:
+            message = self.client.recv(self.BUFFER_SIZE).decode()
+            print("Server:", message)
+            # self.send(output.encode())
+            self.client.send("[+] Message displayed and closed.".encode("utf-8"))
+
+    def endless(self):
+        while True:
+
+            msg = self.client.recv(self.BUFFER_SIZE).decode("utf-8")
+            if msg == "msg":
+                # self.msg()
+                 print("This is where it reached")
+            else:
+                print("msg = " + msg)
+
 
 def main():
     SERVER_IP = "192.168.56.1"  # modify me
@@ -27,9 +44,11 @@ def main():
 
     CLIENT = socket.gethostname()
     CLIENT_IP = socket.gethostbyname(CLIENT)
+    print(CLIENT_IP)
     client = Client(SERVER_IP, PORT, BUFFER_SIZE, CLIENT_IP)
 
     client.connectToServer()
+    client.endless()
 
 
 if __name__ == "__main__":
