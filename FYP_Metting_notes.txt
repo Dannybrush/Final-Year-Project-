@@ -1,0 +1,20 @@
+work on having more features
+
+Describe each
+in details. 
+
+session based 
+timer
+ 
+Gui
+
+Establish connection, Accepts
+
+Aknowledge and disconnect
+
+Play with discussion 
+
+Malicious
+
+IDLE TIMER
+
