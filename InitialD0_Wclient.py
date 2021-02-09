@@ -1,3 +1,17 @@
+"""
+
++-----------------------------------------------------------------------+
+|                               ONCOGENE                                |
+|    Author: 27016005                                                   |
+|    Version: 0.1.1                                                     |
+|    Last update: 09-02-2021 (dd-mm-yyyy)                               |
+|                                                                       |
+|                 [   ONLY FOR EDUCATIONAL PURPOSES   ]                 |
++-----------------------------------------------------------------------+
+
+"""
+
+
 import os
 import socket
 import subprocess
