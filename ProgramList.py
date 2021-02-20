@@ -1,4 +1,4 @@
-"""
+menu = """
 Shell
     back
     CD
@@ -29,6 +29,9 @@ Play a game
 Attach a game
 Run Front end Exe
 """
+
+print (menu)
+input()
 """
 
 """

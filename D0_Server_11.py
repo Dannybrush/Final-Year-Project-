@@ -52,7 +52,6 @@ class Server:
         self.connections.append(self.client_socket)
         # # safemode
 
-
         mode = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
         print(mode)
         if mode == "2":
