@@ -1,16 +1,16 @@
 """
 +-----------------------------------------------------------------------+
-|                               DrownedRat                              |
+|                               UoRat                                   |
 |    Author: 27016005                                                   |
-|    Version: 0.2.2                                                     |
-|    Last update: 11-02-2021 (dd-mm-yyyy)                               |
+|    Version: 0.2.3                                                     |
+|    Last update: 25-02-2021 (dd-mm-yyyy)                               |
 |                                                                       |
 |                 [   ONLY FOR EDUCATIONAL PURPOSES   ]                 |
 +-----------------------------------------------------------------------+
 ------- CONFIGURATION ------
 In order to use this tool you need to do some tweaking:
     1. The Server's IP gets automatically set by taking the address from /etc/hosts (Linux), check if your LAN address exists in this file. I had to put it manually since there was only localhost.
-    2. Select a PORT number, the default value set in the client file is 1234
+    2. Select a PORT number, the default value set in the client file is 1337
     3. Play around with the paths, I've set some default values but you can change them
 ------ NOTE ------
 This code was tested and developed on a Linux machine, it may not work on other machines.
