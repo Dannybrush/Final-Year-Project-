@@ -47,6 +47,8 @@ class Client:
             print("KEYS MATCHED - PAIRING SUCCESSFUL")
             self.client.send("MATCH".encode("utf-8"))
 
+
+
     def txtmsg(self):
         print("TextMessageMode: Activated")
         message = self.client.recv(self.BUFFER_SIZE).decode()

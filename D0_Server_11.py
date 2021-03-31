@@ -40,7 +40,6 @@ class Server:
     def startServer(self):
         self.server.bind((self.IP, self.PORT))
         self.server.listen(2)
-
         self.acceptConnections()
 
     def acceptConnections(self):

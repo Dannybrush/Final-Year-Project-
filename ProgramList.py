@@ -3,23 +3,23 @@ Shell
     back
     CD
 
-Get Info
-shutdown
-    logoff
+Get Info --> Done
+shutdown --> Via subprocess? 
+    logoff 
     restart
     Lock
 
-disconnect
+disconnect --> easy
 
-Send File
-Receive File
+Send File --> Client -> Server Done
+Receive File --> Reverse above? 
 
-Run Script
+Run Script --> NEEDS DOING
 
 Send Console message
     send Messagebox
 
-Keylogger
+Keylogger --> MOST IMPORTANT
     Stop
     Start
     Retrieve Logs
@@ -28,9 +28,10 @@ Clipboard
 Play a game
 Attach a game
 Run Front end Exe
+Chat
 """
 
-print (menu)
+print(menu)
 input()
 """
 
