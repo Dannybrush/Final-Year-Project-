@@ -1,0 +1,119 @@
+ 
+
+“Investigating the parallels between  using a RAT-style software for malicious intent and Virtuous purposes”
+09.04.2020
+─
+Daniel Broomhead
+27016005 
+123 Your Street
+Your City, ST 12345
+
+
+Overview	2
+Goals	2
+Specifications	2
+Lorem Ipsum	2
+Milestones	3
+Lorem ipsum	3
+Dolor sit amet	3
+
+
+Glossary of Terms & Abbreviations: 
+RAT : Remote Access Trojan / Remote Administration Tool 
+TCP :  Transmission Control Protocol 
+UDP : User Datagram Protocol
+OOP : Object Oriented Programming
+OOD: Object Oriented Design
+
+
+
+
+Overview
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper.
+Goals
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit
+Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+Specifications
+Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius.
+Lorem Ipsum
+Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan.
+Milestones
+Lorem ipsum
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+Dolor sit amet
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+
+
+
+Notes: 
+Introduction
+Background research: 
+Research into current existing RAT style softwares: 
+Open source: 
+Prerequisites
+
+What Is a RAT? 
+ There are two main commonly accepted full forms of “RAT” differentiated by their intended purpose. 
+Remote Administration Tool - The term often used for when the software is applied with productive, admirable purposes. This often takes the form of  utility software such as a remote desktop, tech support or even file sharing software. Visible. 
+Remote Access Trojan - The term used when the software is deployed with malicious intent, this is because a RAT enables administrative control, granting permissions to do most processes on a computer including, key-logging, accessing peripherals such as webcams, taking screenshots, distributing other viruses formatting drives and altering systems.  Often used for spying, hijacking or destroying. Invisible. 
+
+
+ A RAT gives the user full access to the system, as if they have physical access to the device. 
+
+
+
+
+
+
+
+
+
+
+
+Remote Access is an extremely beneficial facility and effectively demonstrates the parallels between software being used for malicious purposes and virtuous intent. 
+Remote Desktop tools offer the functionality of running a desktop environment remotely on one system while being  displayed on another device, in a client-server style methodology. 
+Remote Desktop software often captures the peripheral inputs such as mouse and keyboard, on the local (client) and communicates them with the remote computer (server) which in turn returns the display commands to the local computer. 
+The most common legal uses of remote access tools are for remote desktop and remote login functionalities, commonly offered by schools, universities and workplaces in order to facilitate the possibility of working off-site. This has been fundamentally significant in the ability to keep businesses maintained and operational throughout the coronavirus pandemic. 
+An example of this is the NX Technology, proprietary protocol designed by NoMachine- as used by the University of Reading Computer Science department to access the computing cluster, As well as remote logon to the linux machines from off campus. 
+A common malicious use of this style of software, if the infamous “tech support scam” 
+
+
+Design Methodology. 
+OOP
+Many different methodologies were considered when approaching this project. The first aspect considered when approaching the designated problem was the possibility of  dissecting the solution into a series of smaller problems. 
+
+ 
+
+Connection of two devices.
+TCP vs UDP 
+Socket Programming
+What: 
+One of the most common features embedded in a RAT-Style software is a “Keylogger”.
+A keylogger at its most simplistic, fundamental view, is a device or software which records the input of a peripheral, usually a keyboard, and allows the records or “logs” to be retrieved. 
+ A Keylogger is one of the oldest forms of malicious attacks on a system. Keyloggers come in a variety of different forms, with the oldest forms focussing around a hardware device which would physically nestle between the keyboard and the computer, logging every keystroke and recording the keys pressed, and then when the keylogger is physically retrieved, the data can be downloaded and analysed. 
+This was then developed upon until the data could be retrieved without having to physically retrieve the device logging. 
+How: 
+In the modern implementations of many keyloggers, they opt for alternative methods of data retrieval such as uploading the logged data to predefined websites, databases, FTP servers etc. Another method is sending the data via email. Modern keyloggers also come in the form of software, making them much easier to infect a system and much harder  Another possibility when using a keylogger as part of a larger system such as a RAT is remotely downloading the keystroke data. 
+Keyloggers are now one of the most common forms of cyber threat, and usually come as part of many other more significant threats, including RATs. 
+Virtuous: 
+While Keyloggers are nearly exclusively used for malicious purposes, they do pose virtuous utility if operated with moral intentions. One situation where the ethical implementation is apparent, is as part of a diagnostic utility - keyloggers are often used to check whether the input from a keyboard is being received correctly, and if it is not - what input (if any) is being received. This works effectively because a keylogger can display representations for keypresses of keys which would not usually produce a visual output, such as modifier keys, function keys. This can be used to pinpoint where an Input/Output error is taking place. 
+These are also commonly implemented as functionalities in a monitoring or surveillance style tool, such as those used by parents to monitor children, or employers to monitor employees. 
+
+
+The effective use of keyloggers dates back to the 1970’s where they were used to monitor electric typewriters by the Soviet Union. These particular devices would capture the typed information, and send it via radio signals back to the Sovient Intelligence base.
+Links: 
+https://www.comparitech.com/net-admin/remote-access-trojan-rat/
+https://github.com/mwsrc/njRAT
+https://www.black-c0de.org/how-to-hack-someones-pc-rat/
+https://www.geeksforgeeks.org/introduction-to-rat-remote-administration-tool/
+https://www.geeksforgeeks.org/introduction-to-remote-login/?ref=rp
+https://www.youtube.com/watch?v=FDalSfP4NyA
+https://www.comparitech.com/net-admin/remote-access-trojan-rat/
+https://www.goodreads.com/book/show/19402184-how-to-write-your-own-remote-access-tools-in-c
+https://github.com/awesome-security/basicRAT/blob/master/basicRAT_server.py
+https://www.crn.com/news/mobility/231900454/build-your-own-remote-desktop-tool-for-free.htm
+https://www.speedguide.net/port.php?port=1337
+https://null-byte.wonderhowto.com/how-to/program-your-own-little-rat-part-1-getting-server-working-0167490/
+https://www.reddit.com/r/AskNetsec/comments/38izfh/best_resource_for_learning_to_write_a_rat/
+https://www.darkreading.com/perimeter/the-7-most-common-rats-in-use-today-/a/d-id/1321965
+

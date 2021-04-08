@@ -1,0 +1,13 @@
+Platform,Windows
+Platform Release,10
+Platform Version,10.0.19041
+Platform Architecture,"('64bit', 'WindowsPE')"
+Machine Type,AMD64
+Platform Node,D-L-BRUSH
+Platform Information,Windows-10-10.0.19041-SP0
+ALL,"uname_result(system='Windows', node='D-L-BRUSH', release='10', version='10.0.19041', machine='AMD64')"
+CPU,"Intel64 Family 6 Model 158 Stepping 10, GenuineIntel"
+Python Build,"('tags/v3.9.1:1e5d33e', 'Dec  7 2020 17:08:21')"
+Python Compiler,MSC v.1927 64 bit (AMD64)
+Python Version,3.9.1
+Windows Platform,"('10', '10.0.19041', 'SP0', 'Multiprocessor Free')"

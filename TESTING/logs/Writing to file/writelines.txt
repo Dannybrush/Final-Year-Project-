@@ -1,0 +1,1 @@
+PlatformPlatform ReleasePlatform VersionPlatform ArchitectureMachine TypePlatform NodePlatform InformationALLCPUPython BuildPython CompilerPython VersionWindows Platform

