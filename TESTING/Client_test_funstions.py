@@ -132,6 +132,7 @@ def MSGBOX():
 def ctypesmsgbox():
     msg = "testmessage"
     ctypes.windll.user32.MessageBoxW(0, f"{msg}", 'Alert!', 0)
+
 def enableTN():
     msg = "start /B start cmd.exe @cmd /c pkgmgr /iu:TelnetClient "
     runrun(msg)

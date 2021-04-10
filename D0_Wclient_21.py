@@ -196,6 +196,14 @@ class Client:
             print("This failed too (runrun) : " + str(e) + " + " + str(obj))
 
 
+    def MSGBOX(self):
+        insert = "this is a test"
+
+        msgA = '(echo MsgBox "' + insert + '" ^& vbCrLf ^& "Line 2",262192, "Title")> File.vbs'
+        self.runrun(msgA)
+        msgB = 'start File.vbs'
+        self.runrun(msgB)
+
     def txtmsg(self):
         print("TextMessageMode: Activated")
         message = self.client.recv(self.BUFFER_SIZE).decode()
