@@ -32,14 +32,19 @@ def takeScreenshot(screenshot_counter):
 input()
 # takeScreenshot(screenshot_counter)
 input()
+## SINGLE SCREENSHOT
 sct = mss()
 sct.shot(output='./logs/screenshot_test.png')  # taking screenshot
 print("Screenshot taken")
 input()
+
+## SCREENSHOT WITH NUMBER IN FILENAME
 sct = mss()
 sct.shot(output='./logs/screenshot{}.png'.format(screenshot_counter))  # taking screenshot
 print("Screenshot {} taken".format(screenshot_counter))
 input()
+## 10 ITERATIVE SCREENSHOTS AT 5 SECOND INTERVALS
+    ## USES I FOR FILENAME
 sct = mss()
 screenshot_counter = 0
 for i in range(10):
@@ -47,6 +52,7 @@ for i in range(10):
     print("Screenshot {} taken".format(i))
     time.sleep(5)
 input()
+## USES COUNTER FOR FILENAMES
 for i in range(10):
     sct.shot(output='./logs/loop_screenshot{}.png'.format(screenshot_counter))  # taking screenshot
     print("Screenshot {} taken".format(screenshot_counter))

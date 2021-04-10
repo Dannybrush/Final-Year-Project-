@@ -1,3 +1,4 @@
+import ctypes
 import os
 import subprocess
 import time
@@ -118,21 +119,34 @@ def runrun(msg):
     except Exception as e:
         print("This failed too (runrun) : " + str(e) + " + " + str(obj))
 
+def MSGBOX():
 
+    insert = "this is a test"
+
+    msgA = '(echo MsgBox "'+insert+'" ^& vbCrLf ^& "Line 2",262192, "Title")> File.vbs'
+    runrun(msgA)
+    msgB = 'start File.vbs'
+    runrun(msgB)
+
+
+def ctypesmsgbox():
+    msg = "testmessage"
+    ctypes.windll.user32.MessageBoxW(0, f"{msg}", 'Alert!', 0)
 def enableTN():
     msg = "start /B start cmd.exe @cmd /c pkgmgr /iu:TelnetClient "
     runrun(msg)
 input()
 #TN()
-enableTN()
+#enableTN()
 
-print("telnet")
-print("TT")
-time.sleep(20)
-playchess()
-playstarwars()
-weather()
-for i in range(0, 10):
-    print(i)
+#print("telnet")
+#print("TT")
+#time.sleep(20)
+#playchess()
+#playstarwars()
+#weather()
+#for i in range(0, 10):
+#    print(i)
 #locksystem()
-
+MSGBOX()
+ctypesmsgbox()

