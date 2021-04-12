@@ -92,8 +92,8 @@ class Server:
         print("This was 100% successful")
         input()
         while True:
-            self.getTargetInfo()
-
+            #self.getTargetInfo()
+            pass
 
     def disconn(self):
         command = "disconnect"

