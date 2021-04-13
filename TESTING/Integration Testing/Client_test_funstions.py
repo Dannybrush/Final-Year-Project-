@@ -3,10 +3,13 @@ import os
 import subprocess
 import time
 
+import pyperclip
+
 
 def locksystem():
     msg = "rundll32.exe user32.dll, LockWorkStation"
     runrun(msg)
+
 
 def shutdown():
     msg = "shutdown /s"
@@ -150,5 +153,31 @@ input()
 #    print(i)
 #locksystem()
 #MSGBOX()
-ctypesmsgbox()
+#ctypesmsgbox()
 
+def execfile():
+    path2script = input("type starwars.py")
+    print("HERE ")
+    try:
+        exec(open(path2script).read())
+        print("SUCCESS")
+    except FileNotFoundError as fnfe:
+        print("FAILURE " + str(fnfe))
+    except Exception as e:
+        print("FAILURE " + str(e))
+
+
+def clipboard():
+    cb = pyperclip.paste()  # getting the clipboard
+
+    if len(cb) == 0:
+        print("/No Clipboard contents/")
+    else:
+        print(cb)
+
+
+for i in range(10):
+    clipboard()
+    time.sleep(5)
+
+passwordpasswordpassword

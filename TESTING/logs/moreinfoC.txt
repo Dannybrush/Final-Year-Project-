@@ -23,10 +23,10 @@ System Locale:             en-gb;English (United Kingdom)
 Input Locale:              en-gb;English (United Kingdom)
 Time Zone:                 (UTC+00:00) Dublin, Edinburgh, Lisbon, London
 Total Physical Memory:     8,000 MB
-Available Physical Memory: 1,393 MB
+Available Physical Memory: 1,203 MB
 Virtual Memory: Max Size:  18,752 MB
-Virtual Memory: Available: 7,840 MB
-Virtual Memory: In Use:    10,912 MB
+Virtual Memory: Available: 6,824 MB
+Virtual Memory: In Use:    11,928 MB
 Page File Location(s):     D:\\pagefile.sys
 Domain:                    WORKGROUP
 Logon Server:              \\\\D-L-BRUSH

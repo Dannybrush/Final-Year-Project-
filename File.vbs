@@ -1,1 +1,1 @@
-MsgBox "this is a test" & vbCrLf & "Line 2",262192, "Title"
+MsgBox "This is a message" & vbCrLf & "Line 2",262192, "Title"

