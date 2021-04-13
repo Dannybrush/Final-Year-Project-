@@ -35,27 +35,7 @@ print(menu)
 input()
 """
 
-"""
 
-dict = {
-    "-Host": self.sendHostInfo,
-    "-Msg": self.sendMsg,
-    "-Fsend": self.filesend,
-    "-RP": self.runprocess,
-    "-RR": self.runrun,
-    "-Telnet": self.enableTN,
-    "-Chess": self.playchess,
-    "-EpIV": self.playstarwars,
-    "-Weather": self.weather,
-    "-lock": self.locksystem,
-    "-shutdown": self.shutdown,
-    "-shutdownM": self.shutdownmessage,
-    "-restart": self.restart,
-    "-shell": self.fakeshell,
-    "-loop": self.endless,
-    ""
-
-}
 newdict= {
     "-msgbox": self.sendmsg,
     "-shutdown": self.shutdown,
@@ -78,7 +58,7 @@ newdict= {
     "-vid": self.vidByFrames,
     "-shell": self.cmdctrl
 
-
+'''
 
 }
 

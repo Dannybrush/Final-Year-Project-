@@ -442,7 +442,7 @@ class Server:
             buff = self.updateBuffer(emsize)
             print("buffer = " + str(buff))
             evenmore = self.saveBigFile(int(emsize), buff)
-            print("evenmore =" + str(evenmore))
+            print("evenmore =" + str(evenmore.decode()))
         else:
             evenmore = self.client_socket.recv(self.BUFFER_SIZE)
         moresysinfo = input("Would you like to see more?: ")

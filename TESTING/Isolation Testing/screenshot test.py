@@ -32,30 +32,45 @@ def takeScreenshot(screenshot_counter):
 input()
 # takeScreenshot(screenshot_counter)
 input()
-## SINGLE SCREENSHOT
-sct = mss()
-sct.shot(output='./logs/screenshot_test.png')  # taking screenshot
-print("Screenshot taken")
-input()
+def single():
+    ## SINGLE SCREENSHOT
+    sct = mss()
+    sct.shot(output='./logs/screenshot_test.png')  # taking screenshot
+    print("Screenshot taken")
+    input()
 
 ## SCREENSHOT WITH NUMBER IN FILENAME
-sct = mss()
-sct.shot(output='./logs/screenshot{}.png'.format(screenshot_counter))  # taking screenshot
-print("Screenshot {} taken".format(screenshot_counter))
-input()
+def number():
+
+    sct = mss()
+    sct.shot(output='./logs/screenshot{}.png'.format(screenshot_counter))  # taking screenshot
+    print("Screenshot {} taken".format(screenshot_counter))
+    input()
 ## 10 ITERATIVE SCREENSHOTS AT 5 SECOND INTERVALS
     ## USES I FOR FILENAME
-sct = mss()
-screenshot_counter = 0
-for i in range(10):
-    sct.shot(output='./logs/loop_screenshot{}.png'.format(i))  # taking screenshot
-    print("Screenshot {} taken".format(i))
-    time.sleep(5)
-input()
+def iterative():
+
+    sct = mss()
+    screenshot_counter = 0
+    for i in range(10):
+        sct.shot(output='./logs/loop_screenshot{}.png'.format(i))  # taking screenshot
+        print("Screenshot {} taken".format(i))
+        time.sleep(5)
+    input()
 ## USES COUNTER FOR FILENAMES
-for i in range(10):
-    sct.shot(output='./logs/loop_screenshot{}.png'.format(screenshot_counter))  # taking screenshot
-    print("Screenshot {} taken".format(screenshot_counter))
-    screenshot_counter += 1
-    time.sleep(5)
+def counter():
+    sct = mss()
+    screenshot_counter = 0
+    for i in range(10):
+        sct.shot(output='./logs/loop_screenshot{}.png'.format(screenshot_counter))  # taking screenshot
+        print("Screenshot {} taken".format(screenshot_counter))
+        screenshot_counter += 1
+        time.sleep(5)
 input()
+def allscreens():
+    sct = mss()
+    multi = "_multi"
+    sct.shot(mon=-1, output='./logs/screen{}.png'.format(multi))
+
+allscreens()
+input("Done")
