@@ -178,11 +178,14 @@ def main():
     CLIENT = socket.gethostname()
     CLIENT_IP = socket.gethostbyname(CLIENT)
     print(CLIENT_IP)
-    client = Client(SERVER_IP, PORT, BUFFER_SIZE, CLIENT_IP)
-    client.connectToServer()
+    while True:
+        try:
+            client = Client(SERVER_IP, PORT, BUFFER_SIZE, CLIENT_IP)
+            client.connectToServer()
 
-    client.progress()
-
+            client.progress()
+        except:
+            pass
 
 if __name__ == "__main__":
     main()

