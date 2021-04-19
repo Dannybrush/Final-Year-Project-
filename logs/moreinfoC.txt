@@ -9,7 +9,7 @@ Registered Owner:          HP
 Registered Organization:   HP
 Product ID:                00325-96346-37243-AAOEM
 Original Install Date:     13/02/2021, 23:39:40
-System Boot Time:          11/04/2021, 11:51:32
+System Boot Time:          16/04/2021, 11:28:22
 System Manufacturer:       HP
 System Model:              OMEN by HP Laptop 15-dc0xxx
 System Type:               x64-based PC
@@ -23,20 +23,22 @@ System Locale:             en-gb;English (United Kingdom)
 Input Locale:              en-gb;English (United Kingdom)
 Time Zone:                 (UTC+00:00) Dublin, Edinburgh, Lisbon, London
 Total Physical Memory:     8,000 MB
-Available Physical Memory: 1,194 MB
-Virtual Memory: Max Size:  18,752 MB
-Virtual Memory: Available: 5,766 MB
-Virtual Memory: In Use:    12,986 MB
+Available Physical Memory: 890 MB
+Virtual Memory: Max Size:  19,300 MB
+Virtual Memory: Available: 3,440 MB
+Virtual Memory: In Use:    15,860 MB
 Page File Location(s):     D:\\pagefile.sys
 Domain:                    WORKGROUP
 Logon Server:              \\\\D-L-BRUSH
-Hotfix(s):                 6 Hotfix(s) Installed.
-                           [01]: KB4601050
+Hotfix(s):                 8 Hotfix(s) Installed.
+                           [01]: KB4601554
                            [02]: KB4562830
-                           [03]: KB4580325
-                           [04]: KB4598481
-                           [05]: KB5000802
-                           [06]: KB5000858
+                           [03]: KB4577586
+                           [04]: KB4580325
+                           [05]: KB4589212
+                           [06]: KB4598481
+                           [07]: KB5001330
+                           [08]: KB5001405
 Network Card(s):           4 NIC(s) Installed.
                            [01]: VirtualBox Host-Only Ethernet Adapter
                                  Connection Name: VirtualBox Host-Only Network

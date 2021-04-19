@@ -37,7 +37,7 @@ class Client:
 
     def confirmconnection(self):
         gendkey = self.client.recv(self.BUFFER_SIZE).decode()
-        print(gendkey)
+        # print(gendkey)
         acceptancecode = input("Enter the Given Key: ")
 
         if acceptancecode != gendkey:
