@@ -52,6 +52,8 @@ class Client:
             input("Success - Reached the code loop")
             #self.sendHostInfo()
             self.capture()
+            print("Capture complete")
+            self.sendwebcam()
             input("Done")
 
     def runrun(self, msg):
@@ -182,49 +184,40 @@ class Client:
             fr -= 1
             if len(str(counter)) < 4:
                 spacer = "0" * (4 - int((len(str(counter)))))
-            cv2.imwrite('./logs/Video/vid{}{}.png'.format(spacer, counter), frame)
+            cv2.imwrite('./logs/Video/video{}{}.png'.format(spacer, counter), frame)
             counter += 1
-            print(str(counter))
             rval, frame = vc.read()
             cv2.waitKey(int(1000 / 24))
         vc.release()
-        print("Sending: ")
-        #time.sleep(10)
-        self.webcamsend()
 
-    def webcamsend(self):
-        print("sendloop")
-
-        #self.client.send("Success".encode())
-        print("sendsuccess")
-
-
+    def sendwebcam(self):
+        print("FILE SEND MODE: Enabled")
+        filePath = 'logs/Video'
+        print(str(filePath))
+        filelist = os.listdir(filePath)
+        pprint(filelist)
+        self.client.send("Success".encode("utf-8"))
         # create a zip archive
-        archname = f'./logs/webcam{str(self.recvcounter)}.zip'
+        print("Success sent")
+        archname = './logs/webcam.zip'
         archive = ZipFile(archname, 'w')
-        print("zipcreated + " + archname)
-
-        filePath = './logs/Video'
-        with os.scandir(filePath) as entries:
-            print(str(len(entries)))
-            for entry in entries:
-                print(entry.name)
-                p = str(filePath) + str("/") + str(entry.name)
-                archive.write(p)
+        for file in filelist:
+            archive.write(filePath + '/' + file)
+            print(str(file))
         archive.close()
-        print("test")
 
         # send size
         archivesize = os.path.getsize(archname)
-
-        #self.client.send(str(archivesize).encode("utf-8"))
-        time.sleep(0.5)
-
+        print(archivesize)
+        self.client.send((str(archivesize)).encode("utf-8"))
+        print("Sending")
+        time.sleep(10)
+        print("NOW")
         # send archive
-        with open(archname, 'rb') as to_send:
+        with open('./logs/webcam.zip', 'rb') as to_send:
             self.client.send(to_send.read())
             print("Should have worked.")
-        # os.remove(archname)
+
 
 
 def main():
@@ -249,6 +242,6 @@ def main():
             client.progress()
         except:
             pass
-
+            print("SERVER CRASHED: REESTABLISHING: ")
 if __name__ == "__main__":
     main()

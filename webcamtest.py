@@ -1,4 +1,5 @@
 import os
+from zipfile import ZipFile
 
 import cv2
 
@@ -56,5 +57,28 @@ def test2():
             x = cv2.imread(p)
             cv2.imshow("P2", x)
             cv2.waitKey(0)
+
+
+def sendwebcam():
+        print("FILE SEND MODE: Enabled")
+        filePath = './logs/Video'
+
+        filelist = os.listdir(filePath)
+        # create a zip archive
+
+        archname = './logs/webcam.zip'
+        archive = ZipFile(archname, 'w')
+        for file in filelist:
+            archive.write(filePath + '/' + file)
+            print(str(file))
+        archive.close()
+
+        # send size
+        archivesize = os.path.getsize(archname)
+
+        # send archive
+        with open('./logs/webcam.zip', 'rb') as to_send:
+            print("Should have worked.")
 capture()
 test2()
+sendwebcam()
