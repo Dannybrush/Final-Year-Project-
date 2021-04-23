@@ -5,6 +5,10 @@ import time
 
 import cv2
 from mss import mss
+sct = mss()
+sct.shot(output='screen.png')  # taking screenshot
+
+
 screenshot_counter = 1
 def takeScreenshot(screenshot_counter):
     sct = mss()

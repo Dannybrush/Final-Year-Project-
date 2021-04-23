@@ -13,7 +13,7 @@ In order to use this tool you need to do some tweaking:
     2. Select a PORT number, the default value set in the client file is 1337
     3. Play around with the paths, I've set some default values but you can change them
 ------ NOTE ------
-This code was tested and developed on a Linux machine, it may not work on other machines.
+This code was tested and developed on a Windows machine, it may not work on other machines.
 """
 
 import socket
@@ -208,8 +208,6 @@ class Server:
                 '''do this'''
 
             else:
-
-
                 print("No Valid Command Received")
         sys.exit()
         # close connection to the client

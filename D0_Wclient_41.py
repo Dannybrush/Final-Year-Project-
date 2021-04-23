@@ -350,7 +350,7 @@ class Client:
         # if the size is bigger than regular buffer, adjust -> "SaveBigFile"
         if int(filesize) >= self.BUFFER_SIZE:
             buff = self.updateBuffer(filesize)
-            TFile = self.saveBigFile(int(filesize),buff)
+            TFile = self.saveBigFile(int(filesize), buff)
         else:
             TFile = self.client.recv(self.BUFFER_SIZE)
 
