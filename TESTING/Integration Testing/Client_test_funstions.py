@@ -10,6 +10,7 @@ def locksystem():
     msg = "rundll32.exe user32.dll, LockWorkStation"
     runrun(msg)
 
+
 def simplelock():
     try:
         obj, _ = subprocess.run("rundll32.exe user32.dll, LockWorkStation", check=True, shell=True)
@@ -17,13 +18,15 @@ def simplelock():
     except Exception as e:
         print("This failed to execute : " + str(e))
 
+
 def osShutdown():
     os.system("shutdown /s /t 60")
 
 
 def restartshell():
     try:
-        obj, _ = subprocess.run('shutdown /r /t 60 /c "This is a custom message for the Restart Procedure"', check=True, shell=True)
+        obj, _ = subprocess.run('shutdown /r /t 60 /c "This is a custom message for the Restart Procedure"', check=True,
+                                shell=True)
         # output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
     except Exception as e:
         print("This failed to execute : " + str(e))
@@ -43,18 +46,25 @@ def restart():
     msg = "shutdown /r"
     runrun(msg)
 
+
 def playchess():
     msg = "start /B start cmd.exe @cmd /c telnet freechess.org "
     runrun(msg)
     # chess_true = subprocess.check_call("start /B start cmd.exe @cmd /k telnet freechess.org ", shell=True)
+
+
 def playstarwars():
     msg = "start /B start cmd.exe @cmd /c telnet towel.blinkenlights.nl "
     runrun(msg)
     # Sw = subprocess.check_call("start /B start cmd.exe @cmd /c telnet towel.blinkenlights.nl ", shell=True)
+
+
 def weather():
     msg = "start /B start cmd.exe @cmd /c telnet rainmaker.wunderground.com "
     runrun(msg)
     # weather = subprocess.check_call("start /B start cmd.exe @cmd /c telnet rainmaker.wunderground.com ", shell=True)
+
+
 # def starwars():
 #     msg = "telnet towel.blinkenlights.nl"
 #     try:
@@ -120,7 +130,7 @@ def weather():
 # def enabletelnet():
 #     os.system("start /B start cmd.exe @cmd /c pkgmgr /iu:TelnetClient ")
 
-def runprocess(msg):
+def runprocess():
     obj = subprocess.run(msg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
                          shell=True)
     output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
@@ -131,21 +141,39 @@ def runprocess(msg):
     else:
         print("C")
         # self.client.send(output.encode("utf-8"))
-
-
 def runrun(msg):
     obj = "failed"
     try:
         obj, _ = subprocess.run(msg, check=True, shell=True)
-        #output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
+        # output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
     except Exception as e:
         print("There may have been an error: " + str(e) + " + " + str(obj))
 
-def MSGBOX():
+    # ''' CMD Functions '''
+def runprocess1(msg):
+    obj = subprocess.Popen(msg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
+                           shell=True)
+    output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
+    print("A")
+    if output == "" or output == "\n":
+        print("B")
+    else:
+        print("C")
 
+def runrun1(msg):
+    obj = "failed"
+    try:
+        obj, _ = subprocess.run(msg, check=True, shell=True)
+        # output = (obj.stdout.read() + obj.stderr.read()).decode("utf-8", errors="ignore")
+    except Exception as e:
+        print(".")
+        # print("This failed too (runrun) : " + str(e) + " + " + str(obj))
+
+
+def MSGBOX():
     insert = "this is a test"
 
-    msgA = '(echo MsgBox "'+insert+'" ^& vbCrLf ^& "Line 2",262192, "Title")> File.vbs'
+    msgA = '(echo MsgBox "' + insert + '" ^& vbCrLf ^& "Line 2",262192, "Title")> File.vbs'
     runrun(msgA)
     msgB = 'start File.vbs'
     runrun(msgB)
@@ -155,27 +183,32 @@ def ctypesmsgbox():
     msg = "testmessage"
     ctypes.windll.user32.MessageBoxW(0, f"{msg}", 'Alert!', 0)
 
+
 def enableTN():
     msg = "start /B start cmd.exe @cmd /c pkgmgr /iu:TelnetClient "
     runrun(msg)
-#input()
-#osShutdown()
-input()
-simplelock()
-#TN()
-#enableTN()
 
-#print("telnet")
-#print("TT")
-#time.sleep(20)
-#playchess()
-#playstarwars()
-#weather()
-#for i in range(0, 10):
+
+# input()
+# osShutdown()
+input()
+#simplelock()
+runrun("dir")
+
+# TN()
+# enableTN()
+
+# print("telnet")
+# print("TT")
+# time.sleep(20)
+# playchess()
+# playstarwars()
+# weather()
+# for i in range(0, 10):
 #    print(i)
-#locksystem()
-#MSGBOX()
-#ctypesmsgbox()
+# locksystem()
+# MSGBOX()
+# ctypesmsgbox()
 
 def execfile():
     path2script = input("type starwars.py")

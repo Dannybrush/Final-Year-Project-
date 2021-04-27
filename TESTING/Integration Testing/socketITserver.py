@@ -179,7 +179,7 @@ class Server:
             screen.write(fullscreen)
         print("*** File saved ***")
 
-    def test2(self):
+    def WCplayback(self):
 
         #path = f'../receivedfile/webcam{str(self.recvcounter - 1)}'
         path = f'../receivedfile/webcamS'

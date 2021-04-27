@@ -216,7 +216,7 @@ class Client:
         if malorgood == "1":
             print("Malicious mode enabled: ")
             self.client.send("1".encode("utf-8"))
-        else:
+        else:_
             print("Virtuous mode enabled: ")
             self.client.send("2".encode("utf-8"))
             self.confirmconnection()
@@ -225,11 +225,9 @@ class Client:
             msg = (self.client.recv(self.BUFFER_SIZE).decode("utf-8"))
             print("message received {msg}")
             if msg == "msg":
-
                 # self.msg()
                 print("This is where it reached")
                 self.txtmsg()
-                print("This is where it reached")
                 time.sleep(3)
             elif msg == "shell":
                 self.fakeshell()
