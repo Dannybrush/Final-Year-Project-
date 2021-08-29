@@ -9,7 +9,7 @@ Registered Owner:          HP
 Registered Organization:   HP
 Product ID:                00325-96346-37243-AAOEM
 Original Install Date:     13/02/2021, 23:39:40
-System Boot Time:          25/04/2021, 09:51:10
+System Boot Time:          28/04/2021, 10:05:26
 System Manufacturer:       HP
 System Model:              OMEN by HP Laptop 15-dc0xxx
 System Type:               x64-based PC
@@ -23,10 +23,10 @@ System Locale:             en-gb;English (United Kingdom)
 Input Locale:              en-gb;English (United Kingdom)
 Time Zone:                 (UTC+00:00) Dublin, Edinburgh, Lisbon, London
 Total Physical Memory:     8,000 MB
-Available Physical Memory: 1,217 MB
-Virtual Memory: Max Size:  18,240 MB
-Virtual Memory: Available: 5,105 MB
-Virtual Memory: In Use:    13,135 MB
+Available Physical Memory: 1,353 MB
+Virtual Memory: Max Size:  21,824 MB
+Virtual Memory: Available: 8,904 MB
+Virtual Memory: In Use:    12,920 MB
 Page File Location(s):     D:\\pagefile.sys
 Domain:                    WORKGROUP
 Logon Server:              \\\\D-L-BRUSH
